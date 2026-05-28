@@ -136,6 +136,15 @@
   #pa-links a.word{border-color:#6b551c;color:var(--gold-2)}
   #pa-links a:active{transform:scale(.96)}
 </style>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#a78bff">
+<script>
+if('serviceWorker' in navigator){const had=!!navigator.serviceWorker.controller;let r=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(r)return;r=true;if(had)location.reload();});
+  addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').then(reg=>{reg.update();setInterval(()=>reg.update(),60000);}).catch(()=>{});});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)navigator.serviceWorker.getRegistration().then(r=>r&&r.update()).catch(()=>{});});
+}
+</script>
 </head>
 <body>
 <div id="app">

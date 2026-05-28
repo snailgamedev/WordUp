@@ -1,0 +1,13 @@
+{
+  "name": "Word Up",
+  "short_name": "WordUp",
+  "description": "Play Word Up — free, no download.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b0a14",
+  "theme_color": "#a78bff",
+  "categories": ["games"],
+  "icons": [{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
