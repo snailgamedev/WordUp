@@ -4,47 +4,48 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0b0a14">
-<title>Word Up — Bible & Brain Trivia</title>
-<meta name="description" content="Word Up — free Bible & general-knowledge trivia. Test your faith and your smarts. No download, just tap and play.">
+<title>Word Up — Bible &amp; Brain Trivia + Word Search + Daily 10</title>
+<meta name="description" content="Word Up — free Bible &amp; general-knowledge trivia, word search, and a fresh Daily 10. No download, just tap and play.">
 <style>
   :root{
     --bg-0:#08070f; --bg-1:#0b0a14; --bg-2:#15131f; --bg-3:#262236;
     --ink:#f6f4ff; --soft:#cfc9e6; --muted:#8a83a8;
-    --gold:#f5c542; --gold-2:#ffe08a; --purple:#a78bff; --pink:#ff5d8f; --green:#3ddc84; --red:#ff5d6c; --blue:#5fb6ff;
+    --gold:#f5c542; --gold-2:#ffe08a; --purple:#a78bff; --pink:#ff5d8f; --green:#3ddc84; --red:#ff5d6c; --blue:#5fb6ff; --cyan:#22d3ee;
     --font:"Trebuchet MS","Segoe UI",system-ui,-apple-system,sans-serif;
     --arcade:"Arial Black","Trebuchet MS",system-ui,sans-serif;
     --shadow:0 12px 32px rgba(0,0,0,.5);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;height:100%}
-  body{font-family:var(--font);color:var(--ink);background:radial-gradient(1100px 700px at 50% -8%,#1c1733,var(--bg-1) 55%,var(--bg-0));-webkit-user-select:none;user-select:none}
+  body{font-family:var(--font);color:var(--ink);background:radial-gradient(1100px 700px at 50% -8%,#1c1733,var(--bg-1) 55%,var(--bg-0));-webkit-user-select:none;user-select:none;overflow:hidden}
   #app{position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden}
-  .screen{position:absolute;inset:0;display:none;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .screen{position:absolute;inset:0;display:none;flex-direction:column;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
   .screen.on{display:flex;animation:fade .3s ease}
   @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-  .wrap{width:100%;max-width:680px;margin:0 auto;padding:18px 18px 40px}
+  .wrap{width:100%;max-width:720px;margin:0 auto;padding:18px 18px 80px}
 
   /* splash */
   #splash{align-items:center;justify-content:center;text-align:center}
   .sp-ic{font-size:78px;filter:drop-shadow(0 6px 18px rgba(167,139,255,.5));animation:bob 2.6s ease-in-out infinite}
   @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
   .sp-title{font-family:var(--arcade);font-size:clamp(44px,15vw,84px);letter-spacing:2px;margin:6px 0 0;
-    background:linear-gradient(180deg,#fff,var(--purple) 55%,var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 2px 0 rgba(0,0,0,.15)}
+    background:linear-gradient(180deg,#fff,var(--purple) 55%,var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
   .sp-sub{color:var(--soft);letter-spacing:2px;font-size:13px;margin-top:2px}
   .sp-verse{color:var(--muted);font-size:12px;font-style:italic;max-width:320px;margin:18px auto 0;line-height:1.6}
   .sp-tap{margin-top:26px;color:var(--gold);letter-spacing:2px;font-size:13px;animation:blink 1.3s ease-in-out infinite}
   @keyframes blink{0%,100%{opacity:.4}50%{opacity:1}}
 
   /* topbar */
-  .topbar{display:flex;align-items:center;gap:10px;padding:14px 16px;padding-top:max(14px,env(safe-area-inset-top))}
+  .topbar{display:flex;align-items:center;gap:10px;padding:14px 16px;padding-top:max(14px,env(safe-area-inset-top));flex:0 0 auto}
   .tb-back{width:42px;height:42px;flex:0 0 auto;border-radius:12px;border:1px solid var(--bg-3);background:var(--bg-2);color:var(--purple);font-size:20px;cursor:pointer}
   .tb-back:active{transform:scale(.92)}
   .tb-title{flex:1;font-family:var(--arcade);font-size:18px;letter-spacing:.5px}
-  .tb-score{background:linear-gradient(180deg,#2a2410,#1a1608);border:1px solid #6b551c;border-radius:999px;padding:7px 14px;font-weight:800;color:var(--gold-2);font-size:14px}
+  .tb-score{background:linear-gradient(180deg,#2a2410,#1a1608);border:1px solid #6b551c;border-radius:999px;padding:7px 14px;font-weight:800;color:var(--gold-2);font-size:14px;white-space:nowrap}
 
-  /* mode cards */
+  /* menu */
   .lead{font-size:13px;color:var(--muted);letter-spacing:2px;margin:4px 2px 12px}
   .modes{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+  @media(min-width:600px){.modes{grid-template-columns:1fr 1fr 1fr}}
   .mode{position:relative;border-radius:18px;padding:18px 16px;cursor:pointer;border:1px solid var(--bg-3);overflow:hidden;
     background:linear-gradient(180deg,var(--bg-2),var(--bg-1));box-shadow:var(--shadow);transition:transform .12s,border-color .2s,box-shadow .2s;--mc:var(--purple)}
   .mode:hover{transform:translateY(-3px);border-color:var(--mc);box-shadow:0 16px 36px -14px var(--mc)}
@@ -57,28 +58,45 @@
   .mode.soon{opacity:.5;cursor:default}
   .mode.soon:hover{transform:none;border-color:var(--bg-3);box-shadow:var(--shadow)}
   .mode .lock{position:absolute;top:12px;right:14px;font-size:13px}
+  .mode .ding{position:absolute;top:8px;right:10px;font-size:10px;color:var(--gold);font-weight:800;letter-spacing:1px}
 
   /* quiz */
-  .qcat{font-size:11px;letter-spacing:2px;color:var(--mc,var(--purple));font-weight:800;text-align:center;margin-top:4px}
-  .qprog{display:flex;gap:5px;justify-content:center;margin:12px 0}
+  .qcat{font-size:11px;letter-spacing:2px;color:var(--purple);font-weight:800;text-align:center;margin-top:4px}
+  .qprog{display:flex;gap:5px;justify-content:center;margin:12px 0;flex-wrap:wrap}
   .qprog i{width:22px;height:5px;border-radius:3px;background:var(--bg-3)}
-  .qprog i.done{background:var(--purple)} .qprog i.cur{background:var(--gold)}
+  .qprog i.done{background:var(--green)} .qprog i.miss{background:var(--red)} .qprog i.cur{background:var(--gold);animation:pulseDot 1s ease-in-out infinite}
+  @keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.5}}
   .qbar{height:6px;border-radius:4px;background:var(--bg-3);overflow:hidden;margin:6px 0 16px}
   .qbar i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--gold));transition:width .25s linear}
-  .qtext{font-size:clamp(19px,5vw,26px);font-weight:800;line-height:1.35;text-align:center;margin:10px 0 20px;min-height:90px;display:flex;align-items:center;justify-content:center}
+  .qtext{font-size:clamp(18px,4.8vw,24px);font-weight:800;line-height:1.4;text-align:center;margin:10px 0 18px;min-height:80px;display:flex;align-items:center;justify-content:center;padding:0 4px}
   .opts{display:grid;gap:11px}
-  .opt{padding:16px 18px;border-radius:14px;border:1px solid var(--bg-3);background:var(--bg-2);font-size:15px;font-weight:700;text-align:left;cursor:pointer;color:var(--ink);transition:transform .1s,border-color .15s,background .15s}
+  .opt{padding:15px 18px;border-radius:14px;border:1px solid var(--bg-3);background:var(--bg-2);font-size:15px;font-weight:700;text-align:left;cursor:pointer;color:var(--ink);transition:transform .1s,border-color .15s,background .15s}
   .opt:hover{border-color:var(--purple)} .opt:active{transform:scale(.98)}
-  .opt.right{background:linear-gradient(180deg,rgba(61,220,132,.25),rgba(61,220,132,.08));border-color:var(--green);color:#bff6d4}
-  .opt.wrong{background:linear-gradient(180deg,rgba(255,93,108,.22),rgba(255,93,108,.06));border-color:var(--red);color:#ffc6cc}
+  .opt.right{background:linear-gradient(180deg,rgba(61,220,132,.28),rgba(61,220,132,.08));border-color:var(--green);color:#bff6d4;animation:pop .35s ease}
+  .opt.wrong{background:linear-gradient(180deg,rgba(255,93,108,.25),rgba(255,93,108,.06));border-color:var(--red);color:#ffc6cc;animation:shake .35s ease}
+  @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-4px)}}
   .opt[disabled]{cursor:default}
-  .qfeed{text-align:center;margin-top:16px;min-height:48px;font-size:13px;color:var(--soft);line-height:1.5}
+  .qfeed{text-align:center;margin-top:16px;min-height:48px;font-size:13px;color:var(--soft);line-height:1.55}
   .qfeed .vref{color:var(--gold)}
   .qstreak{text-align:center;color:var(--gold);font-size:12px;font-weight:800;margin-top:2px;min-height:16px}
 
+  /* word search */
+  .ws-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+  .ws-info .ws-cat{color:var(--purple);font-size:11px;letter-spacing:2px;font-weight:800}
+  .ws-info .ws-count{color:var(--gold);font-weight:800;font-size:13px}
+  .ws-grid{display:grid;gap:3px;background:var(--bg-2);border:1px solid var(--bg-3);border-radius:14px;padding:8px;touch-action:none;user-select:none}
+  .ws-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;background:var(--bg-1);border-radius:4px;font-family:var(--arcade);font-size:clamp(13px,3.6vw,18px);color:var(--ink);transition:background .12s,color .12s,transform .12s}
+  .ws-cell.sel{background:rgba(167,139,255,.35);color:#fff;transform:scale(1.04)}
+  .ws-cell.found{background:linear-gradient(180deg,rgba(61,220,132,.45),rgba(61,220,132,.18));color:#bff6d4}
+  .ws-words{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;justify-content:center}
+  .ws-word{padding:6px 12px;border-radius:99px;background:var(--bg-2);border:1px solid var(--bg-3);font-size:12px;font-weight:800;letter-spacing:1px}
+  .ws-word.found{background:linear-gradient(180deg,rgba(61,220,132,.3),rgba(61,220,132,.1));border-color:var(--green);color:#bff6d4;text-decoration:line-through}
+
   /* results */
   #result{align-items:center;justify-content:center;text-align:center}
-  .r-ic{font-size:64px}
+  .r-ic{font-size:64px;animation:popIn .55s cubic-bezier(.2,1.4,.5,1.2)}
+  @keyframes popIn{0%{transform:scale(.3) rotate(-15deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
   .r-score{font-family:var(--arcade);font-size:clamp(40px,12vw,68px);color:var(--gold-2);margin:4px 0}
   .r-sub{color:var(--soft);font-size:15px}
   .r-best{color:var(--muted);font-size:12px;margin-top:6px}
@@ -94,7 +112,12 @@
   .btn-row{display:flex;gap:11px;margin-top:24px;width:100%;max-width:380px}
   .btn-row .btn{flex:1}
 
-  /* standalone-only cross-links (hidden inside the arcade iframe) */
+  /* center toasts + confetti FX layer */
+  #fx{position:fixed;inset:0;pointer-events:none;z-index:200}
+  .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(60px);background:var(--bg-2);border:1px solid var(--bg-3);border-radius:99px;padding:9px 18px;font-size:13px;font-weight:800;color:var(--gold-2);opacity:0;transition:transform .3s,opacity .3s;z-index:210}
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+  /* standalone-only cross-links (hidden inside arcade iframe) */
   #pa-links{position:fixed;left:0;right:0;bottom:0;display:flex;gap:10px;justify-content:center;padding:10px;
     padding-bottom:max(10px,env(safe-area-inset-bottom));background:linear-gradient(0deg,var(--bg-0),transparent);z-index:50}
   #pa-links a{display:flex;align-items:center;gap:6px;padding:9px 15px;border-radius:999px;text-decoration:none;font-size:12px;font-weight:800;border:1px solid var(--bg-3);background:var(--bg-2);color:var(--soft)}
@@ -108,7 +131,7 @@
   <section class="screen on" id="splash">
     <div class="sp-ic">📖</div>
     <div class="sp-title">WORD UP</div>
-    <div class="sp-sub">BIBLE &amp; BRAIN TRIVIA</div>
+    <div class="sp-sub">BIBLE · BRAIN · WORD</div>
     <div class="sp-verse" id="spVerse"></div>
     <div class="sp-tap">▸ TAP TO PLAY ◂</div>
   </section>
@@ -116,9 +139,9 @@
   <section class="screen" id="menu">
     <div class="topbar"><div class="tb-title">📖 Word Up</div><div class="tb-score" id="menuBest">best —</div></div>
     <div class="wrap">
-      <div class="lead">🎯 PICK A QUIZ · 10 questions a round</div>
+      <div class="lead">🎯 PICK A QUIZ · go HAM</div>
       <div class="modes" id="modeGrid"></div>
-      <div style="text-align:center;margin-top:22px;color:var(--muted);font-size:11px;line-height:1.6" id="menuFoot"></div>
+      <div style="text-align:center;margin-top:22px;color:var(--muted);font-size:11px;line-height:1.7" id="menuFoot"></div>
     </div>
   </section>
 
@@ -139,6 +162,23 @@
     </div>
   </section>
 
+  <section class="screen" id="ws">
+    <div class="topbar">
+      <div class="tb-back" onclick="quitWS()">‹</div>
+      <div class="tb-title">🔤 Word Search</div>
+      <div class="tb-score" id="wsScore">0/0</div>
+    </div>
+    <div class="wrap">
+      <div class="ws-info">
+        <div class="ws-cat" id="wsCat"></div>
+        <div class="ws-count">⏱ <span id="wsTime">0:00</span></div>
+      </div>
+      <div class="ws-grid" id="wsGrid"></div>
+      <div class="ws-words" id="wsWords"></div>
+      <div style="text-align:center;color:var(--muted);font-size:11px;margin-top:14px">tap &amp; drag across a word to find it · horizontal &amp; vertical</div>
+    </div>
+  </section>
+
   <section class="screen" id="result">
     <div class="wrap" style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;min-height:70vh">
       <div class="r-ic" id="rIc">🏆</div>
@@ -156,6 +196,9 @@
 
 </div>
 
+<canvas id="fx"></canvas>
+<div class="toast" id="toast"></div>
+
 <div id="pa-links">
   <a href="https://snailgamedev.github.io/PeakArcade/">🎮 More games</a>
   <a class="word" href="https://snailgamedev.github.io/PeakArcade/word.html">✝ The Word</a>
@@ -163,158 +206,390 @@
 
 <script>
 "use strict";
-const VERSION='1.0';
+const VERSION='1.5';
 const $=s=>document.querySelector(s);
 const SAVE_KEY='wordup:save:v1';
-let save=load(); function load(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{best:{}}}catch(e){return {best:{}}}}
+let save=load(); function load(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s)return Object.assign({best:{},dailyTs:null,dailyScore:0,wsBest:{}},s,{best:s.best||{},wsBest:s.wsBest||{}});}catch(e){}return {best:{},dailyTs:null,dailyScore:0,wsBest:{}}}
 function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
 
-/* hide the back-to-arcade links when running INSIDE the Peak Arcade iframe (the hub has its own ✕) */
 const EMBEDDED=(()=>{try{return window.self!==window.top}catch(e){return true}})();
 if(EMBEDDED){const el=$('#pa-links');if(el)el.style.display='none';}
 
-/* ---------- splash verses (rotating) ---------- */
+/* ---------- SFX (tiny WebAudio) ---------- */
+const SFX=(()=>{
+  let ctx;function ac(){return ctx||(ctx=new (window.AudioContext||window.webkitAudioContext)());}
+  function tone(f,d,t){const a=ac(),o=a.createOscillator(),g=a.createGain();o.type=t||'sine';o.frequency.value=f;o.connect(g);g.connect(a.destination);
+    g.gain.setValueAtTime(0,a.currentTime);g.gain.linearRampToValueAtTime(.22,a.currentTime+.01);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+d);
+    o.start();o.stop(a.currentTime+d);}
+  return {
+    right(){try{tone(523,.10,'triangle');setTimeout(()=>tone(659,.10,'triangle'),80);setTimeout(()=>tone(784,.18,'triangle'),160);}catch(e){}},
+    wrong(){try{tone(165,.22,'sawtooth');setTimeout(()=>tone(140,.22,'sawtooth'),100);}catch(e){}},
+    tick(){try{tone(880,.04,'square');}catch(e){}},
+    win(){try{[523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,.18,'triangle'),i*100));}catch(e){}},
+    fail(){try{[392,330,247].forEach((f,i)=>setTimeout(()=>tone(f,.25,'sawtooth'),i*140));}catch(e){}},
+  };
+})();
+
+/* ---------- confetti FX (cheap) ---------- */
+const FX=(()=>{
+  const c=$('#fx');let ctx=c.getContext('2d'),parts=[],raf=0;
+  function fit(){c.width=innerWidth*devicePixelRatio;c.height=innerHeight*devicePixelRatio;c.style.width=innerWidth+'px';c.style.height=innerHeight+'px';ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);}
+  addEventListener('resize',fit);fit();
+  function loop(){ctx.clearRect(0,0,innerWidth,innerHeight);
+    for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.vy+=.18;p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;p.life-=.018;if(p.life<=0||p.y>innerHeight+30){parts.splice(i,1);continue;}
+      ctx.save();ctx.globalAlpha=Math.max(0,p.life);ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.c;ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*1.6);ctx.restore();}
+    raf=parts.length?requestAnimationFrame(loop):0;
+  }
+  function burst(n){const cols=['#f5c542','#a78bff','#3ddc84','#5fb6ff','#ff5d8f','#fff'];for(let i=0;i<n;i++){parts.push({x:innerWidth/2+(Math.random()-.5)*60,y:innerHeight*0.35,vx:(Math.random()-.5)*7,vy:-2-Math.random()*5,rot:Math.random()*6,vr:(Math.random()-.5)*.4,life:1,s:5+Math.random()*5,c:cols[(Math.random()*cols.length)|0]});}if(!raf)raf=requestAnimationFrame(loop);}
+  return {burst};
+})();
+function showToast(msg,ms){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._);t._=setTimeout(()=>t.classList.remove('show'),ms||1500);}
+
+/* ---------- splash verses ---------- */
 const SPLASH_VERSES=[
   ['“Study to shew thyself approved unto God… rightly dividing the word of truth.”','2 Timothy 2:15'],
   ['“Thy word is a lamp unto my feet, and a light unto my path.”','Psalm 119:105'],
   ['“Wisdom is the principal thing; therefore get wisdom.”','Proverbs 4:7'],
   ['“These were more noble… they searched the scriptures daily.”','Acts 17:11'],
-  ['“The fear of the LORD is the beginning of knowledge.”','Proverbs 1:7']
+  ['“The fear of the LORD is the beginning of knowledge.”','Proverbs 1:7'],
+  ['“If any of you lack wisdom, let him ask of God.”','James 1:5'],
+  ['“For God hath not given us the spirit of fear; but of power, and of love, and of a sound mind.”','2 Timothy 1:7'],
 ];
 (function(){const v=SPLASH_VERSES[Math.floor(Math.random()*SPLASH_VERSES.length)];$('#spVerse').innerHTML=v[0]+'<br><span style="color:var(--gold)">— '+v[1]+'</span>';})();
 
-/* ---------- QUESTION BANK ----------
-   q: question · o: 4 options · a: index of the correct option · v: (Bible) reference shown after */
+/* ==========================================================================
+   📚 QUESTION BANK — 100+ Bible · 75+ World · all hand-curated
+   format: {q, o:[a,b,c,d], a:correctIdx, v:scripture ref (Bible only)}
+   ========================================================================== */
 const BANK={
   bible:[
-    {q:'Who built an ark to survive the great flood?',o:['Moses','Noah','Abraham','David'],a:1,v:'Genesis 6'},
-    {q:'How many days and nights did it rain during the flood?',o:['7','12','40','100'],a:2,v:'Genesis 7:12'},
-    {q:'Who was thrown into the lions’ den but unharmed?',o:['Daniel','Elijah','Jonah','Paul'],a:0,v:'Daniel 6'},
-    {q:'In whose belly did Jonah spend three days?',o:['A whale (great fish)','A lion','A serpent','A cave'],a:0,v:'Jonah 1:17'},
-    {q:'Who led the Israelites out of Egypt?',o:['Joshua','Aaron','Moses','Joseph'],a:2,v:'Exodus'},
-    {q:'How many disciples did Jesus choose?',o:['7','10','12','40'],a:2,v:'Matthew 10'},
-    {q:'Who denied Jesus three times before the rooster crowed?',o:['Judas','Peter','Thomas','John'],a:1,v:'Luke 22:61'},
-    {q:'In which town was Jesus born?',o:['Nazareth','Jerusalem','Bethlehem','Capernaum'],a:2,v:'Luke 2:4-7'},
-    {q:'What is the first book of the Bible?',o:['Exodus','Genesis','Psalms','Matthew'],a:1,v:'Genesis 1:1'},
-    {q:'What is the last book of the Bible?',o:['Jude','Acts','Revelation','Malachi'],a:2,v:'Revelation'},
-    {q:'Who was swallowed up after slinging a stone at a giant?… who threw it?',o:['Saul','David','Samson','Gideon'],a:1,v:'1 Samuel 17'},
+    /* — CREATION & EARLY GENESIS — */
     {q:'What did God create on the first day?',o:['Animals','Light','Man','The sea'],a:1,v:'Genesis 1:3'},
-    {q:'Who was the strong man who lost his power when his hair was cut?',o:['Samson','Goliath','Saul','Esau'],a:0,v:'Judges 16'},
-    {q:'How many books are in the Bible (Protestant canon)?',o:['39','27','66','72'],a:2,v:'—'},
-    {q:'Who baptized Jesus in the Jordan River?',o:['Peter','John the Baptist','Paul','Andrew'],a:1,v:'Matthew 3'},
-    {q:'“For God so loved the world, that he gave his only begotten ___.”',o:['Word','Son','Spirit','Kingdom'],a:1,v:'John 3:16'},
-    {q:'What did Jesus turn water into at the wedding in Cana?',o:['Bread','Oil','Wine','Honey'],a:2,v:'John 2'},
-    {q:'Who wrote most of the Psalms?',o:['Solomon','David','Moses','Isaiah'],a:1,v:'Psalms'},
     {q:'On which day did God rest from creation?',o:['5th','6th','7th','3rd'],a:2,v:'Genesis 2:2'},
-    {q:'Who was the mother of Jesus?',o:['Martha','Mary','Elizabeth','Ruth'],a:1,v:'Luke 1'},
-    {q:'What sea did Moses part for the Israelites?',o:['Dead Sea','Red Sea','Sea of Galilee','Mediterranean'],a:1,v:'Exodus 14'},
+    {q:'Who was the first man God created?',o:['Cain','Adam','Noah','Seth'],a:1,v:'Genesis 2:7'},
+    {q:'Whom did God form from Adam’s rib?',o:['Lilith','Eve','Sarah','Hagar'],a:1,v:'Genesis 2:22'},
+    {q:'Who tempted Eve in the Garden of Eden?',o:['A lion','A serpent','A demon','An angel'],a:1,v:'Genesis 3:1'},
+    {q:'What did Adam and Eve eat that was forbidden?',o:['An apple from a vine','The fruit of the tree of knowledge','A pomegranate','A fig'],a:1,v:'Genesis 3:6'},
+    {q:'Who was Adam and Eve’s first son?',o:['Abel','Seth','Cain','Enoch'],a:2,v:'Genesis 4:1'},
+    {q:'Cain killed which brother?',o:['Seth','Enoch','Abel','Noah'],a:2,v:'Genesis 4:8'},
+    {q:'Who built an ark to survive the great flood?',o:['Moses','Noah','Abraham','David'],a:1,v:'Genesis 6:14'},
+    {q:'How many days and nights did it rain in the flood?',o:['7','12','40','100'],a:2,v:'Genesis 7:12'},
     {q:'How many people were saved on the ark?',o:['2','8','12','40'],a:1,v:'1 Peter 3:20'},
-    {q:'Who betrayed Jesus for thirty pieces of silver?',o:['Peter','Judas Iscariot','Thomas','Pilate'],a:1,v:'Matthew 26:15'},
-    {q:'What is the “fruit of the Spirit” that comes first in the list?',o:['Joy','Peace','Love','Patience'],a:2,v:'Galatians 5:22'},
-    {q:'Who interpreted Pharaoh’s dreams and rose to power in Egypt?',o:['Joseph','Daniel','Jacob','Aaron'],a:0,v:'Genesis 41'}
+    {q:'What was God’s sign of the covenant after the flood?',o:['A star','A rainbow','A dove','A pillar'],a:1,v:'Genesis 9:13'},
+    {q:'What tower did men build that God confused with languages?',o:['Babel','Babylon','Ziggurat','Sinai'],a:0,v:'Genesis 11:9'},
+
+    /* — PATRIARCHS — */
+    {q:'God called him out of Ur and made him the father of many nations:',o:['Isaac','Abraham','Jacob','Job'],a:1,v:'Genesis 12:1'},
+    {q:'Who was Abraham’s wife?',o:['Rachel','Leah','Sarah','Rebekah'],a:2,v:'Genesis 17:15'},
+    {q:'What son did God promise Abraham in his old age?',o:['Ishmael','Isaac','Jacob','Esau'],a:1,v:'Genesis 21:3'},
+    {q:'God tested Abraham by asking him to sacrifice ___:',o:['Ishmael','Isaac','Jacob','a lamb'],a:1,v:'Genesis 22:2'},
+    {q:'Jacob’s name was changed to ___ after wrestling an angel:',o:['Joseph','Israel','Judah','Reuben'],a:1,v:'Genesis 32:28'},
+    {q:'How many sons did Jacob have (the tribes of Israel)?',o:['10','12','13','7'],a:1,v:'Genesis 35'},
+    {q:'Whose coat of many colors made his brothers jealous?',o:['Joseph','Benjamin','Judah','Levi'],a:0,v:'Genesis 37:3'},
+    {q:'Joseph interpreted whose dreams in Egypt, rising to power?',o:['Pharaoh','Potiphar','Nebuchadnezzar','Cyrus'],a:0,v:'Genesis 41'},
+
+    /* — EXODUS & WILDERNESS — */
+    {q:'Who led the Israelites out of Egypt?',o:['Joshua','Aaron','Moses','Joseph'],a:2,v:'Exodus 3:10'},
+    {q:'How many plagues did God send on Egypt?',o:['7','9','10','12'],a:2,v:'Exodus 7–12'},
+    {q:'What was the final plague on Egypt?',o:['Locusts','Boils','Hail','Death of the firstborn'],a:3,v:'Exodus 12:29'},
+    {q:'What sea did Moses part for the Israelites?',o:['Dead Sea','Red Sea','Sea of Galilee','Mediterranean'],a:1,v:'Exodus 14:21'},
+    {q:'On which mountain did Moses receive the Ten Commandments?',o:['Mount Zion','Mount Sinai','Mount Carmel','Mount Nebo'],a:1,v:'Exodus 19:20'},
+    {q:'How many commandments did God give Moses?',o:['7','10','12','40'],a:1,v:'Exodus 20'},
+    {q:'What “bread from heaven” did God provide in the wilderness?',o:['Manna','Quail','Honey','Locusts'],a:0,v:'Exodus 16:31'},
+    {q:'Who was Moses’s older brother and spokesman?',o:['Joshua','Caleb','Aaron','Hur'],a:2,v:'Exodus 7:1'},
+
+    /* — JOSHUA & JUDGES — */
+    {q:'Who led Israel into the Promised Land after Moses?',o:['Joshua','Caleb','Othniel','Gideon'],a:0,v:'Joshua 1:2'},
+    {q:'Which city’s walls fell after Israel marched around it 7 days?',o:['Ai','Jericho','Hebron','Bethel'],a:1,v:'Joshua 6:20'},
+    {q:'Who was the strongest man, who lost his power when his hair was cut?',o:['Samson','Goliath','Saul','Esau'],a:0,v:'Judges 16:17'},
+    {q:'Who defeated the Midianites with only 300 men?',o:['Gideon','Samson','Barak','Deborah'],a:0,v:'Judges 7:7'},
+    {q:'Who was the female judge who led Israel?',o:['Esther','Ruth','Deborah','Miriam'],a:2,v:'Judges 4:4'},
+
+    /* — KINGS & PROPHETS — */
+    {q:'Who was Israel’s first king?',o:['Saul','David','Solomon','Samuel'],a:0,v:'1 Samuel 10:1'},
+    {q:'Who killed Goliath with a sling and a stone?',o:['Saul','David','Jonathan','Samuel'],a:1,v:'1 Samuel 17'},
+    {q:'Who built the first temple in Jerusalem?',o:['David','Solomon','Hezekiah','Ezra'],a:1,v:'1 Kings 6'},
+    {q:'Who was known for his great wisdom (and 700 wives)?',o:['David','Solomon','Rehoboam','Josiah'],a:1,v:'1 Kings 3:12'},
+    {q:'Which prophet called down fire on Mount Carmel?',o:['Elisha','Elijah','Isaiah','Jeremiah'],a:1,v:'1 Kings 18:38'},
+    {q:'Elijah was taken to heaven in a chariot of ___:',o:['Gold','Fire','Wind','Clouds'],a:1,v:'2 Kings 2:11'},
+    {q:'Who was thrown into the lions’ den but unharmed?',o:['Daniel','Elijah','Jonah','Paul'],a:0,v:'Daniel 6:22'},
+    {q:'Three friends of Daniel survived which trial?',o:['The lions’ den','The fiery furnace','A storm at sea','A pit'],a:1,v:'Daniel 3'},
+    {q:'In whose belly did Jonah spend three days?',o:['A whale (great fish)','A lion','A serpent','A cave'],a:0,v:'Jonah 1:17'},
+    {q:'Which prophet saw a vision of dry bones?',o:['Isaiah','Jeremiah','Ezekiel','Daniel'],a:2,v:'Ezekiel 37'},
+
+    /* — WOMEN & STORIES — */
+    {q:'Who said “whither thou goest, I will go” to her mother-in-law?',o:['Esther','Ruth','Hannah','Mary'],a:1,v:'Ruth 1:16'},
+    {q:'Which queen risked her life to save the Jewish people?',o:['Jezebel','Esther','Bathsheba','Vashti'],a:1,v:'Esther 4:16'},
+    {q:'Who was the mother of John the Baptist?',o:['Mary','Elizabeth','Anna','Hannah'],a:1,v:'Luke 1:13'},
+    {q:'Who was the mother of Jesus?',o:['Martha','Mary','Elizabeth','Ruth'],a:1,v:'Luke 1:30'},
+
+    /* — JESUS’ LIFE — */
+    {q:'In which town was Jesus born?',o:['Nazareth','Jerusalem','Bethlehem','Capernaum'],a:2,v:'Luke 2:4'},
+    {q:'Where did Jesus grow up?',o:['Bethlehem','Jerusalem','Capernaum','Nazareth'],a:3,v:'Matthew 2:23'},
+    {q:'Who baptized Jesus in the Jordan River?',o:['Peter','John the Baptist','Paul','Andrew'],a:1,v:'Matthew 3:13'},
+    {q:'How many disciples did Jesus choose?',o:['7','10','12','40'],a:2,v:'Matthew 10:1'},
+    {q:'Who walked on water briefly with Jesus?',o:['John','Peter','Andrew','James'],a:1,v:'Matthew 14:29'},
+    {q:'What did Jesus turn water into at the wedding in Cana?',o:['Bread','Oil','Wine','Honey'],a:2,v:'John 2:9'},
+    {q:'How many loaves did Jesus use to feed 5,000?',o:['2','5','7','12'],a:1,v:'Matthew 14:17'},
+    {q:'How many fish were used in that miracle?',o:['2','5','7','12'],a:0,v:'Matthew 14:17'},
+    {q:'Whom did Jesus raise from the dead after 4 days?',o:['Jairus’s daughter','Lazarus','The widow’s son','Stephen'],a:1,v:'John 11:43'},
+    {q:'On what mountain did Jesus preach his most famous sermon?',o:['Mount Sinai','The Mount of Olives','The mount (Sermon on the Mount)','Mount Zion'],a:2,v:'Matthew 5'},
+    {q:'Who denied Jesus three times before the rooster crowed?',o:['Judas','Peter','Thomas','John'],a:1,v:'Luke 22:61'},
+    {q:'Who betrayed Jesus for 30 pieces of silver?',o:['Peter','Judas Iscariot','Thomas','Pilate'],a:1,v:'Matthew 26:15'},
+    {q:'Who delivered Jesus to be crucified?',o:['Herod','Caiaphas','Pontius Pilate','Annas'],a:2,v:'Matthew 27:26'},
+    {q:'Jesus was crucified on a hill called ___:',o:['Mount Zion','Golgotha','Sinai','Olives'],a:1,v:'Matthew 27:33'},
+    {q:'How many days after his death did Jesus rise?',o:['1','3','7','40'],a:1,v:'1 Corinthians 15:4'},
+    {q:'How many days was Jesus on earth between resurrection and ascension?',o:['7','30','40','50'],a:2,v:'Acts 1:3'},
+
+    /* — APOSTLES & EARLY CHURCH — */
+    {q:'Who replaced Judas as the 12th apostle?',o:['Stephen','Matthias','Barnabas','Mark'],a:1,v:'Acts 1:26'},
+    {q:'On what day did the Holy Spirit fall on the apostles?',o:['Passover','Pentecost','Sabbath','Christmas'],a:1,v:'Acts 2:1'},
+    {q:'Who was the first Christian martyr?',o:['Peter','James','Stephen','Paul'],a:2,v:'Acts 7:60'},
+    {q:'What was Paul’s name before his conversion?',o:['Simon','Saul','Silas','Stephen'],a:1,v:'Acts 9:4'},
+    {q:'On which road did Saul meet Jesus and convert?',o:['To Jericho','To Bethlehem','To Damascus','To Emmaus'],a:2,v:'Acts 9:3'},
+    {q:'Who was Paul’s traveling companion on his second journey?',o:['Barnabas','Silas','Mark','Timothy'],a:1,v:'Acts 15:40'},
+    {q:'How many letters of the New Testament did Paul author (traditionally)?',o:['7','10','13','21'],a:2,v:'—'},
+
+    /* — FAMOUS VERSES & CONCEPTS — */
+    {q:'“For God so loved the world, that he gave his only begotten ___.”',o:['Word','Son','Spirit','Kingdom'],a:1,v:'John 3:16'},
+    {q:'“The LORD is my ___; I shall not want.”',o:['rock','shield','shepherd','strength'],a:2,v:'Psalm 23:1'},
+    {q:'“I am the way, the truth, and the ___.”',o:['kingdom','light','life','word'],a:2,v:'John 14:6'},
+    {q:'“I can do all things through ___ which strengtheneth me.”',o:['God','Christ','the Lord','the Spirit'],a:1,v:'Philippians 4:13'},
+    {q:'“Be still, and know that I am ___.”',o:['near','here','God','love'],a:2,v:'Psalm 46:10'},
+    {q:'What is the first fruit of the Spirit listed in Galatians 5?',o:['Joy','Peace','Love','Patience'],a:2,v:'Galatians 5:22'},
+    {q:'How many fruits of the Spirit are listed?',o:['7','9','10','12'],a:1,v:'Galatians 5:22-23'},
+    {q:'The Greatest Commandment is to love God with all your heart, soul, mind and ___:',o:['strength','spirit','breath','being'],a:0,v:'Mark 12:30'},
+
+    /* — BOOKS / NUMBERS — */
+    {q:'What is the first book of the Bible?',o:['Exodus','Genesis','Psalms','Matthew'],a:1,v:'—'},
+    {q:'What is the last book of the Bible?',o:['Jude','Acts','Revelation','Malachi'],a:2,v:'—'},
+    {q:'How many books are in the Protestant Bible?',o:['39','27','66','72'],a:2,v:'—'},
+    {q:'How many books are in the Old Testament?',o:['27','39','46','50'],a:1,v:'—'},
+    {q:'How many books are in the New Testament?',o:['12','21','27','39'],a:2,v:'—'},
+    {q:'What is the shortest book in the Bible?',o:['Jude','3 John','Obadiah','Philemon'],a:1,v:'—'},
+    {q:'Which book has 150 chapters of songs/prayers?',o:['Proverbs','Psalms','Lamentations','Song of Songs'],a:1,v:'—'},
+    {q:'Who wrote most of the Psalms?',o:['Solomon','David','Moses','Isaiah'],a:1,v:'—'},
+    {q:'Who wrote most of Proverbs?',o:['David','Solomon','Moses','Job'],a:1,v:'—'},
+    {q:'Which Gospel was written by a doctor?',o:['Matthew','Mark','Luke','John'],a:2,v:'—'},
+    {q:'Which Gospel is the shortest?',o:['Matthew','Mark','Luke','John'],a:1,v:'—'},
+
+    /* — MISC — */
+    {q:'What tree did Zacchaeus climb to see Jesus?',o:['Olive','Fig','Sycamore','Cedar'],a:2,v:'Luke 19:4'},
+    {q:'What did Jesus say to calm the storm?',o:['“Be still”','“Peace, be still”','“Fear not”','“Stop”'],a:1,v:'Mark 4:39'},
+    {q:'How many fish did the disciples catch when Jesus told them to cast the net?',o:['100','153','200','300'],a:1,v:'John 21:11'},
+    {q:'What did John the Baptist eat in the wilderness?',o:['Bread and figs','Locusts and wild honey','Manna','Fish'],a:1,v:'Matthew 3:4'},
+    {q:'Who climbed a tree to see Jesus and was short of stature?',o:['Nicodemus','Bartimaeus','Zacchaeus','Lazarus'],a:2,v:'Luke 19:3'},
+    {q:'Who said “I am the resurrection and the life”?',o:['Peter','John','Jesus','Paul'],a:2,v:'John 11:25'},
+    {q:'What did God create on the second day?',o:['Plants','Stars','Sky/firmament','Animals'],a:2,v:'Genesis 1:8'},
+    {q:'What did God create on the fourth day?',o:['Land animals','Sun, moon, stars','Birds','Man'],a:1,v:'Genesis 1:16'},
+    {q:'What did the wise men bring baby Jesus?',o:['Gold, silver, bronze','Gold, frankincense, myrrh','Wheat, oil, wine','Bread, fish, lamb'],a:1,v:'Matthew 2:11'},
+    {q:'How many wise men are mentioned in the Bible?',o:['Three','Twelve','It doesn’t say a number','Seven'],a:2,v:'Matthew 2 (number unstated)'},
+    {q:'Who is described as a “man after God’s own heart”?',o:['Moses','David','Abraham','Paul'],a:1,v:'1 Samuel 13:14'},
+    {q:'What did Pilate do after sentencing Jesus?',o:['Tore his robe','Washed his hands','Wrote a letter','Fled the city'],a:1,v:'Matthew 27:24'},
+    {q:'Who anointed Jesus’ feet with expensive perfume?',o:['Martha','Mary','Salome','Joanna'],a:1,v:'John 12:3'},
+    {q:'Which apostle is called “the Beloved”?',o:['Peter','John','James','Andrew'],a:1,v:'John 13:23'},
+    {q:'How long did the Israelites wander in the wilderness?',o:['7 years','40 years','12 years','100 years'],a:1,v:'Numbers 14:33'},
+    {q:'Who was the oldest man in the Bible (969 years)?',o:['Methuselah','Adam','Noah','Enoch'],a:0,v:'Genesis 5:27'},
+    {q:'Who was taken to heaven without dying?',o:['Elijah','Enoch','Both Enoch and Elijah','Moses'],a:2,v:'Genesis 5:24 / 2 Kings 2:11'},
+    {q:'What animal carried Jesus into Jerusalem on Palm Sunday?',o:['Horse','Donkey/colt','Camel','He walked'],a:1,v:'Matthew 21:7'},
+    {q:'What was the name of Jesus’ stepfather?',o:['Zacharias','Joseph','James','Simon'],a:1,v:'Matthew 1:16'},
+    {q:'Who said “I have fought a good fight, I have finished my course”?',o:['Peter','Paul','James','John'],a:1,v:'2 Timothy 4:7'},
   ],
   world:[
+    /* — SCIENCE & SPACE — */
     {q:'What is the largest planet in our solar system?',o:['Saturn','Earth','Jupiter','Neptune'],a:2},
-    {q:'How many continents are there on Earth?',o:['5','6','7','8'],a:2},
-    {q:'What is the chemical symbol for gold?',o:['Gd','Au','Ag','Go'],a:1},
-    {q:'Which ocean is the largest?',o:['Atlantic','Indian','Arctic','Pacific'],a:3},
-    {q:'How many sides does a hexagon have?',o:['5','6','7','8'],a:1},
-    {q:'What is the tallest mountain on Earth?',o:['K2','Everest','Kilimanjaro','Denali'],a:1},
     {q:'Which planet is known as the Red Planet?',o:['Venus','Mars','Mercury','Jupiter'],a:1},
-    {q:'What gas do plants breathe in for photosynthesis?',o:['Oxygen','Nitrogen','Carbon dioxide','Helium'],a:2},
-    {q:'How many strings does a standard guitar have?',o:['4','5','6','7'],a:2},
-    {q:'What is the fastest land animal?',o:['Lion','Cheetah','Horse','Gazelle'],a:1},
+    {q:'How many planets are in our solar system?',o:['7','8','9','10'],a:1},
+    {q:'What is the closest planet to the Sun?',o:['Venus','Mercury','Earth','Mars'],a:1},
+    {q:'How long does it take Earth to orbit the Sun?',o:['1 day','1 month','1 year','10 years'],a:2},
+    {q:'What is the chemical symbol for gold?',o:['Gd','Au','Ag','Go'],a:1},
+    {q:'What is the chemical symbol for silver?',o:['Si','Sv','Ag','Au'],a:2},
     {q:'Water is made of hydrogen and which other element?',o:['Carbon','Oxygen','Nitrogen','Helium'],a:1},
-    {q:'How many minutes are in a full day?',o:['1,200','1,440','2,400','960'],a:1},
-    {q:'Which country has the largest population?',o:['USA','India','China','Brazil'],a:1},
-    {q:'What do you call a baby kangaroo?',o:['Cub','Joey','Kit','Calf'],a:1},
-    {q:'How many degrees are in a right angle?',o:['45','90','180','360'],a:1},
+    {q:'What gas do plants take in for photosynthesis?',o:['Oxygen','Nitrogen','Carbon dioxide','Helium'],a:2},
     {q:'What is the hardest natural substance on Earth?',o:['Gold','Iron','Diamond','Quartz'],a:2},
-    {q:'Which is the smallest prime number?',o:['0','1','2','3'],a:2},
+    {q:'How many bones are in the adult human body?',o:['106','206','306','406'],a:1},
+    {q:'How many chambers does the human heart have?',o:['2','3','4','5'],a:2},
+    {q:'What is the largest organ in the human body?',o:['Liver','Heart','Skin','Brain'],a:2},
+    {q:'Light travels faster than sound. About how fast (per sec)?',o:['300 km','3,000 km','300,000 km','3 million km'],a:2},
+    {q:'What part of the eye controls how much light enters?',o:['Cornea','Pupil','Retina','Lens'],a:1},
+
+    /* — GEOGRAPHY — */
+    {q:'How many continents are there on Earth?',o:['5','6','7','8'],a:2},
+    {q:'Which ocean is the largest?',o:['Atlantic','Indian','Arctic','Pacific'],a:3},
+    {q:'Which is the longest river in the world?',o:['Amazon','Nile','Yangtze','Mississippi'],a:1},
+    {q:'What is the tallest mountain on Earth?',o:['K2','Everest','Kilimanjaro','Denali'],a:1},
+    {q:'Which country has the largest population?',o:['USA','India','China','Brazil'],a:1},
+    {q:'Which country has the largest area?',o:['China','USA','Russia','Canada'],a:2},
+    {q:'In which continent is Egypt?',o:['Asia','Africa','Europe','S. America'],a:1},
+    {q:'What is the capital of Japan?',o:['Kyoto','Tokyo','Osaka','Beijing'],a:1},
+    {q:'What is the capital of Australia?',o:['Sydney','Melbourne','Canberra','Perth'],a:2},
+    {q:'What is the capital of France?',o:['Lyon','Marseille','Paris','Nice'],a:2},
+    {q:'Which country is the Eiffel Tower in?',o:['Italy','France','Spain','UK'],a:1},
+    {q:'Which sea is between Saudi Arabia and Africa?',o:['Black Sea','Caspian','Red Sea','Mediterranean'],a:2},
+    {q:'The Great Wall is in which country?',o:['Japan','India','China','Korea'],a:2},
+    {q:'Which US state is the largest by area?',o:['Texas','California','Alaska','Montana'],a:2},
+
+    /* — ANIMALS & NATURE — */
+    {q:'What is the fastest land animal?',o:['Lion','Cheetah','Horse','Gazelle'],a:1},
     {q:'What is the largest mammal in the world?',o:['Elephant','Blue whale','Giraffe','Hippo'],a:1},
+    {q:'Which animal is known as the “King of the Jungle”?',o:['Tiger','Lion','Leopard','Jaguar'],a:1},
+    {q:'A group of lions is called a ___:',o:['Herd','Pack','Pride','Pod'],a:2},
+    {q:'What do you call a baby kangaroo?',o:['Cub','Joey','Kit','Calf'],a:1},
+    {q:'How many legs does a spider have?',o:['6','8','10','12'],a:1},
+    {q:'How many hearts does an octopus have?',o:['1','2','3','None'],a:2},
+    {q:'Which bird is the fastest in flight?',o:['Eagle','Falcon (peregrine)','Hawk','Swift'],a:1},
+    {q:'What is a baby goat called?',o:['Lamb','Calf','Kid','Foal'],a:2},
+    {q:'Which animal can sleep standing up?',o:['Cat','Horse','Snake','Frog'],a:1},
+
+    /* — HISTORY — */
+    {q:'In what year did Columbus sail to the Americas?',o:['1392','1492','1592','1692'],a:1},
+    {q:'Who was the first president of the United States?',o:['Jefferson','Lincoln','Washington','Adams'],a:2},
+    {q:'In what year did WWII end?',o:['1939','1945','1950','1918'],a:1},
+    {q:'Who invented the lightbulb (mass-produced)?',o:['Edison','Tesla','Bell','Newton'],a:0},
+    {q:'Which ancient civilization built the pyramids of Giza?',o:['Greeks','Romans','Egyptians','Mayans'],a:2},
+    {q:'Who painted the Mona Lisa?',o:['Michelangelo','Da Vinci','Van Gogh','Picasso'],a:1},
+    {q:'In what year did humans first land on the moon?',o:['1959','1969','1979','1989'],a:1},
+    {q:'Which famous ship sank in 1912?',o:['Mayflower','Titanic','Lusitania','Bismarck'],a:1},
+
+    /* — MATH — */
+    {q:'How many sides does a hexagon have?',o:['5','6','7','8'],a:1},
+    {q:'How many degrees are in a right angle?',o:['45','90','180','360'],a:1},
+    {q:'How many degrees are in a triangle’s angles total?',o:['90','180','270','360'],a:1},
+    {q:'Which is the smallest prime number?',o:['0','1','2','3'],a:2},
+    {q:'What is 9 × 8?',o:['64','72','81','78'],a:1},
+    {q:'How many sides does a dodecagon have?',o:['8','10','12','14'],a:2},
+    {q:'Pi (π) is approximately:',o:['3.14','2.72','1.62','6.28'],a:0},
+    {q:'How many zeros are in one million?',o:['4','5','6','9'],a:2},
+
+    /* — SPORTS, MUSIC, MISC — */
+    {q:'How many players are on a basketball team on the court?',o:['4','5','6','7'],a:1},
+    {q:'In soccer, how many players per side on the field?',o:['9','10','11','12'],a:2},
+    {q:'How many strings does a standard guitar have?',o:['4','5','6','7'],a:2},
+    {q:'How many keys are on a standard piano?',o:['76','88','100','120'],a:1},
+    {q:'How many minutes are in a full day?',o:['1,200','1,440','2,400','960'],a:1},
     {q:'How many colors are in a rainbow?',o:['5','6','7','9'],a:2},
-    {q:'What planet do we live on?',o:['Mars','Venus','Earth','Saturn'],a:2}
+    {q:'What planet do we live on?',o:['Mars','Venus','Earth','Saturn'],a:2},
+    {q:'What is the official language of Brazil?',o:['Spanish','Portuguese','English','French'],a:1},
+    {q:'Which language has the most native speakers?',o:['English','Spanish','Mandarin','Hindi'],a:2},
+    {q:'How many wonders of the ancient world are there?',o:['5','6','7','9'],a:2},
+    {q:'Which superhero is known as the “Man of Steel”?',o:['Batman','Spider-Man','Superman','Iron Man'],a:2},
+    {q:'How many time zones does Russia span?',o:['5','8','11','15'],a:2},
   ]
 };
-const RANKS=[ [0,'🌱 Beginner'],[3,'📗 Learner'],[5,'📘 Scholar'],[7,'📙 Sharp'],[9,'🧠 Genius'],[10,'👑 Word Up MASTER'] ];
+
+/* ---------- 🔤 WORD SEARCH PUZZLE SETS ---------- */
+const WS_PUZZLES=[
+  {cat:'12 Disciples',  words:['PETER','JOHN','JAMES','ANDREW','PHILIP','THOMAS','MATTHEW','JUDAS']},
+  {cat:'Fruits of the Spirit', words:['LOVE','JOY','PEACE','KIND','GOOD','FAITH','GENTLE','SELF']},
+  {cat:'Bible People',   words:['MOSES','DAVID','RUTH','MARY','NOAH','PAUL','ISAAC','SARAH']},
+  {cat:'Books of the Bible',  words:['GENESIS','EXODUS','PSALMS','ACTS','JOHN','LUKE','MARK','JUDE']},
+];
 
 /* ---------- MODES ---------- */
 const MODES=[
-  {id:'bible', name:'Bible Trivia', ic:'✝️', mc:'var(--gold)', desc:'25 questions on the Word — OT to NT.', soon:false},
-  {id:'world', name:'World Trivia', ic:'🌍', mc:'var(--blue)', desc:'Science, nature, space & general smarts.', soon:false},
-  {id:'mixed', name:'Mixed Mode', ic:'🎲', mc:'var(--purple)', desc:'A shuffled blend of Bible + world.', soon:false},
-  {id:'search', name:'Word Search', ic:'🔤', mc:'var(--green)', desc:'Find the hidden Bible words. Coming soon.', soon:true},
-  {id:'cross', name:'Crossword', ic:'✏️', mc:'var(--pink)', desc:'Scripture-themed crossword. Coming soon.', soon:true},
-  {id:'daily', name:'Daily 10', ic:'📅', mc:'var(--gold-2)', desc:'A fresh 10 every day. Coming soon.', soon:true}
+  {id:'bible',  name:'Bible Trivia',  ic:'✝️',  mc:'var(--gold)',  desc:'100+ Qs across OT, NT, people, places & famous verses.',  soon:false},
+  {id:'world',  name:'World Trivia',  ic:'🌍',  mc:'var(--blue)',  desc:'75+ Qs — science, geography, animals, history, math.',  soon:false},
+  {id:'mixed',  name:'Mixed Mode',    ic:'🎲',  mc:'var(--purple)',desc:'A shuffled blend of Bible + world.',                     soon:false},
+  {id:'daily',  name:'Daily 10',      ic:'📅',  mc:'var(--gold-2)',desc:'A FRESH 10 every day · same for everyone today.',         soon:false},
+  {id:'ws',     name:'Word Search',   ic:'🔤',  mc:'var(--green)', desc:'Find hidden Bible-themed words on a grid.',              soon:false},
+  {id:'cross',  name:'Crossword',     ic:'✏️',  mc:'var(--pink)',  desc:'Scripture-themed crossword. Coming soon.',                soon:true},
 ];
 
+const RANKS=[ [0,'🌱 Beginner'],[3,'📗 Learner'],[5,'📘 Scholar'],[7,'📙 Sharp'],[9,'🧠 Genius'],[10,'👑 WORD UP MASTER'] ];
+
 /* ---------- screen routing ---------- */
-function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$('#'+id).classList.add('on');}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$('#'+id).classList.add('on');window.scrollTo(0,0);}
 function goMenu(){renderMenu();show('menu');}
 $('#splash').addEventListener('click',goMenu);
 
+/* ---------- menu render ---------- */
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
 function renderMenu(){
   const grid=$('#modeGrid');grid.innerHTML='';
   MODES.forEach(m=>{
-    const best=save.best[m.id];
     const el=document.createElement('div');el.className='mode'+(m.soon?' soon':'');el.style.setProperty('--mc',m.mc);
-    el.innerHTML=`<div class="acc"></div>${m.soon?'<div class="lock">🔒</div>':''}<div class="mi">${m.ic}</div><div class="mn">${m.name}</div><div class="md">${m.desc}</div>`+
-      (m.soon?'<div class="mb">COMING SOON</div>':`<div class="mb">${best!=null?'🏆 best '+best+'/10':'tap to play ▸'}</div>`);
-    if(!m.soon) el.onclick=()=>startQuiz(m.id);
+    let bestLabel='tap to play ▸';
+    if(m.id==='ws'){ const wb=save.wsBest&&Object.values(save.wsBest).reduce((a,b)=>a+(b||0),0); if(wb) bestLabel='🏆 '+wb+' total finds'; }
+    else if(m.id==='daily'){ bestLabel = save.dailyTs===todayStr() ? '✅ today: '+save.dailyScore+'/10' : '🔥 fresh today'; }
+    else if(save.best[m.id]!=null) bestLabel='🏆 best '+save.best[m.id]+'/10';
+    const ding = m.id==='daily' && save.dailyTs!==todayStr() ? '<div class="ding">NEW</div>' : '';
+    el.innerHTML=`<div class="acc"></div>${m.soon?'<div class="lock">🔒</div>':ding}<div class="mi">${m.ic}</div><div class="mn">${m.name}</div><div class="md">${m.desc}</div>`+
+      (m.soon?'<div class="mb">COMING SOON</div>':`<div class="mb">${bestLabel}</div>`);
+    if(!m.soon) el.onclick=()=>route(m.id);
     grid.appendChild(el);
   });
   const bests=Object.values(save.best);const top=bests.length?Math.max(...bests):null;
   $('#menuBest').textContent=top!=null?('best '+top+'/10'):'best —';
-  $('#menuFoot').innerHTML='✝️ Come for the brain workout — leave knowing the Word a little better. 🙏<br>v'+VERSION+' · Word Up';
+  const totalQs=BANK.bible.length+BANK.world.length;
+  $('#menuFoot').innerHTML='✝️ Bible knowledge + brain workout · 🙏<br>'+totalQs+' questions · '+WS_PUZZLES.length+' word searches · daily fresh 10 · v'+VERSION;
+}
+function route(id){
+  if(id==='ws') startWS();
+  else if(id==='daily') startDaily();
+  else startQuiz(id);
 }
 
-/* ---------- quiz engine ---------- */
+/* ==========================================================================
+   TRIVIA ENGINE (Bible · World · Mixed · Daily)
+   ========================================================================== */
 let Q=null;
-function pickQuestions(mode){
+function pickQuestions(mode,count){
   let pool;
   if(mode==='bible') pool=BANK.bible.slice();
   else if(mode==='world') pool=BANK.world.slice();
-  else pool=BANK.bible.concat(BANK.world);   // mixed
-  // shuffle + take 10
+  else pool=BANK.bible.concat(BANK.world);
   for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
-  return pool.slice(0,10);
+  return pool.slice(0,count||10);
 }
 function startQuiz(mode){
-  const list=pickQuestions(mode);
-  Q={mode,list,i:0,score:0,streak:0,locked:false};
+  const list=pickQuestions(mode,10);
+  Q={mode,list,i:0,score:0,streak:0,locked:false,results:[],isDaily:false};
   $('#qTitle').textContent=(MODES.find(m=>m.id===mode)||{}).name||'Quiz';
+  show('quiz');renderQ();
+}
+function startDaily(){
+  if(save.dailyTs===todayStr()){
+    // already played today → show results-style review
+    Q={mode:'daily',list:[],i:0,score:save.dailyScore,streak:0,locked:false,results:[],isDaily:true,already:true};
+    finishQuiz();return;
+  }
+  // seed from date string so it's the same for everyone today
+  const seed=todayStr().split('').reduce((s,c)=>s*31+c.charCodeAt(0)|0,7);
+  const pool=BANK.bible.concat(BANK.world).slice();
+  // seeded shuffle
+  let r=seed;function rand(){r=(r*1103515245+12345)&0x7fffffff;return r/0x7fffffff;}
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  const list=pool.slice(0,10);
+  Q={mode:'daily',list,i:0,score:0,streak:0,locked:false,results:[],isDaily:true};
+  $('#qTitle').textContent='📅 Daily 10';
   show('quiz');renderQ();
 }
 function renderQ(){
   const q=Q.list[Q.i];Q.locked=false;
   $('#qScore').textContent=Q.score;
-  $('#qCat').textContent=(Q.mode==='mixed'?(q.v!=null?'✝️ BIBLE':'🌍 WORLD'):(Q.mode==='bible'?'✝️ BIBLE':'🌍 WORLD'))+' · Q'+(Q.i+1)+' OF 10';
-  // progress dots
-  let prog='';for(let k=0;k<10;k++)prog+=`<i class="${k<Q.i?'done':k===Q.i?'cur':''}"></i>`;$('#qProg').innerHTML=prog;
+  const cat = q.v!=null && q.v!=='—' ? '✝️ BIBLE' : (Q.mode==='bible'?'✝️ BIBLE':(Q.mode==='world'?'🌍 WORLD':'🌍 WORLD'));
+  $('#qCat').textContent=cat+' · Q'+(Q.i+1)+' OF '+Q.list.length;
+  let prog='';for(let k=0;k<Q.list.length;k++){const cls=k<Q.i?(Q.results[k]?'done':'miss'):k===Q.i?'cur':'';prog+=`<i class="${cls}"></i>`;}$('#qProg').innerHTML=prog;
   $('#qText').textContent=q.q;
   $('#qStreak').textContent=Q.streak>=2?('🔥 '+Q.streak+' in a row!'):'';
   $('#qFeed').innerHTML='';
-  // options (shuffle display order but track the correct one)
   const order=q.o.map((t,idx)=>({t,idx}));
   for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
   const opts=$('#qOpts');opts.innerHTML='';
-  order.forEach(o=>{
-    const b=document.createElement('button');b.className='opt';b.textContent=o.t;
-    b.onclick=()=>answer(b,o.idx===q.a,q);
-    opts.appendChild(b);
-  });
+  order.forEach(o=>{const b=document.createElement('button');b.className='opt';b.textContent=o.t;b.onclick=()=>answer(b,o.idx===q.a,q);opts.appendChild(b);});
   $('#qBar').style.width='100%';
 }
 function answer(btn,correct,q){
   if(Q.locked)return;Q.locked=true;
   const opts=$('#qOpts');[...opts.children].forEach(b=>b.disabled=true);
+  Q.results[Q.i]=correct;
   if(correct){
-    btn.classList.add('right');Q.score++;Q.streak++;
+    btn.classList.add('right');Q.score++;Q.streak++;SFX.right();
     $('#qScore').textContent=Q.score;
     $('#qFeed').innerHTML='✅ Correct!'+(q.v&&q.v!=='—'?' <span class="vref">— '+q.v+'</span>':'');
+    if(Q.streak>=3) FX.burst(14);
   }else{
-    btn.classList.add('wrong');Q.streak=0;
-    // reveal the right one
+    btn.classList.add('wrong');Q.streak=0;SFX.wrong();
     [...opts.children].forEach(b=>{ if(b.textContent===q.o[q.a]) b.classList.add('right'); });
     $('#qFeed').innerHTML='❌ The answer: <b>'+q.o[q.a]+'</b>'+(q.v&&q.v!=='—'?' <span class="vref">— '+q.v+'</span>':'');
   }
@@ -323,19 +598,113 @@ function answer(btn,correct,q){
 }
 function finishQuiz(){
   const s=Q.score;
-  if(save.best[Q.mode]==null||s>save.best[Q.mode]){save.best[Q.mode]=s;persist();}
+  if(Q.isDaily){
+    if(!Q.already){ save.dailyTs=todayStr(); save.dailyScore=s; persist(); }
+  } else {
+    if(save.best[Q.mode]==null||s>save.best[Q.mode]){save.best[Q.mode]=s;persist();}
+  }
   let rank=RANKS[0][1];RANKS.forEach(r=>{if(s>=r[0])rank=r[1];});
   $('#rIc').textContent=s>=9?'👑':s>=7?'🏆':s>=5?'🎉':'📖';
   $('#rScore').textContent=s+' / 10';
-  $('#rSub').textContent=s>=9?'Incredible — you KNOW your stuff!':s>=7?'Sharp! Well played.':s>=5?'Solid round — keep climbing.':'Every round teaches you something. 🙏';
-  $('#rBest').textContent='best in this quiz: '+save.best[Q.mode]+'/10';
+  $('#rSub').textContent=Q.already?'You already played today’s — come back tomorrow!':s>=9?'Incredible — you KNOW your stuff!':s>=7?'Sharp! Well played.':s>=5?'Solid round — keep climbing.':'Every round teaches you something. 🙏';
+  $('#rBest').textContent=Q.isDaily?('today: '+save.dailyScore+'/10 · fresh again tomorrow'):('best in this quiz: '+save.best[Q.mode]+'/10');
   $('#rRank').textContent=rank;
   $('#rVerse').innerHTML=s>=7?'“Well done, good and faithful servant.” — Matthew 25:21 🙏':'“Let the wise hear and increase in learning.” — Proverbs 1:5 🙏';
+  if(s>=7){FX.burst(60);SFX.win();} else SFX.fail();
   show('result');
 }
-function replay(){startQuiz(Q.mode);}
+function replay(){ if(Q&&Q.isDaily){goMenu();return;} startQuiz(Q.mode); }
 function quitQuiz(){goMenu();}
-window.quitQuiz=quitQuiz;window.goMenu=goMenu;window.replay=replay;
+
+/* ==========================================================================
+   🔤 WORD SEARCH ENGINE
+   ========================================================================== */
+let WS=null;
+function startWS(){
+  const idx=Math.floor(Math.random()*WS_PUZZLES.length);
+  const puz=WS_PUZZLES[idx];
+  WS={puz,grid:null,gridW:10,gridH:10,found:{},sel:[],start:null,startedAt:Date.now(),tEl:null};
+  WS.grid=generateGrid(puz.words,WS.gridW,WS.gridH);
+  $('#wsCat').textContent=puz.cat.toUpperCase()+' · find them all';
+  $('#wsScore').textContent='0/'+puz.words.length;
+  renderWS();show('ws');
+  if(WS.tEl) clearInterval(WS.tEl);
+  WS.tEl=setInterval(()=>{ if(!WS) return; const s=Math.floor((Date.now()-WS.startedAt)/1000); $('#wsTime').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }, 500);
+}
+function generateGrid(words,W,H){
+  const g=[];for(let r=0;r<H;r++){const row=[];for(let c=0;c<W;c++)row.push('');g.push(row);}
+  // place each word horizontally or vertically
+  words.forEach(w=>{
+    let placed=false;for(let tries=0;tries<60&&!placed;tries++){
+      const horiz=Math.random()<0.5; const len=w.length;
+      const r=Math.floor(Math.random()*(horiz?H:(H-len+1))); const c=Math.floor(Math.random()*(horiz?(W-len+1):W));
+      let ok=true;for(let k=0;k<len;k++){const rr=horiz?r:r+k,cc=horiz?c+k:c;const cur=g[rr][cc];if(cur!==''&&cur!==w[k]){ok=false;break;}}
+      if(ok){for(let k=0;k<len;k++){const rr=horiz?r:r+k,cc=horiz?c+k:c;g[rr][cc]=w[k];}placed=true;}
+    }
+  });
+  // fill empties with random letters
+  const alpha='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for(let r=0;r<H;r++)for(let c=0;c<W;c++) if(!g[r][c]) g[r][c]=alpha[Math.floor(Math.random()*26)];
+  return g;
+}
+function renderWS(){
+  const grid=$('#wsGrid');grid.innerHTML='';grid.style.gridTemplateColumns=`repeat(${WS.gridW},1fr)`;
+  for(let r=0;r<WS.gridH;r++)for(let c=0;c<WS.gridW;c++){
+    const cell=document.createElement('div');cell.className='ws-cell';cell.dataset.r=r;cell.dataset.c=c;cell.textContent=WS.grid[r][c];
+    grid.appendChild(cell);
+  }
+  // pointer drag selection
+  grid.onpointerdown=onPD;grid.onpointermove=onPM;grid.onpointerup=onPU;grid.onpointercancel=onPU;grid.onpointerleave=onPU;
+  // mark already-found cells
+  Object.keys(WS.found).forEach(w=>WS.found[w].forEach(([r,c])=>cellEl(r,c).classList.add('found')));
+  // word chips
+  const list=$('#wsWords');list.innerHTML='';
+  WS.puz.words.forEach(w=>{const sp=document.createElement('span');sp.className='ws-word'+(WS.found[w]?' found':'');sp.textContent=w;list.appendChild(sp);});
+}
+function cellEl(r,c){return document.querySelector(`.ws-cell[data-r="${r}"][data-c="${c}"]`);}
+function cellFromTouch(x,y){const el=document.elementFromPoint(x,y);if(el&&el.classList.contains('ws-cell'))return [+el.dataset.r,+el.dataset.c];return null;}
+function onPD(e){const t=cellFromTouch(e.clientX,e.clientY);if(!t)return;e.preventDefault();WS.start=t;WS.sel=[t];repaintSel();}
+function onPM(e){if(!WS.start)return;const t=cellFromTouch(e.clientX,e.clientY);if(!t)return;
+  // axis-aligned line from start
+  const [r0,c0]=WS.start;const [r,c]=t;const sel=[];
+  if(r===r0){const s=Math.min(c0,c),e2=Math.max(c0,c);for(let cc=s;cc<=e2;cc++) sel.push([r0,cc]);}
+  else if(c===c0){const s=Math.min(r0,r),e2=Math.max(r0,r);for(let rr=s;rr<=e2;rr++) sel.push([rr,c0]);}
+  else{ WS.sel=[WS.start];repaintSel();return;}
+  WS.sel=sel;repaintSel();
+}
+function onPU(e){if(!WS.start)return;
+  // does sel spell any unfound word?
+  const word=WS.sel.map(([r,c])=>WS.grid[r][c]).join('');
+  const reversed=word.split('').reverse().join('');
+  for(const w of WS.puz.words){ if(!WS.found[w] && (w===word||w===reversed)){
+    WS.found[w]=WS.sel.slice();SFX.right();FX.burst(18);
+    save.wsBest[WS.puz.cat]=(save.wsBest[WS.puz.cat]||0)+1;persist();
+    showToast('✅ '+w);
+    break;
+  } }
+  WS.start=null;WS.sel=[];renderWS();updateWSScore();
+  if(Object.keys(WS.found).length===WS.puz.words.length){
+    SFX.win();FX.burst(120);setTimeout(()=>finishWS(),700);
+  }
+}
+function repaintSel(){
+  document.querySelectorAll('.ws-cell.sel').forEach(el=>el.classList.remove('sel'));
+  WS.sel.forEach(([r,c])=>{const el=cellEl(r,c);if(el&&!el.classList.contains('found'))el.classList.add('sel');});
+}
+function updateWSScore(){ const n=Object.keys(WS.found).length, t=WS.puz.words.length; $('#wsScore').textContent=n+'/'+t; }
+function finishWS(){
+  const t=Math.floor((Date.now()-WS.startedAt)/1000);
+  if(WS.tEl){clearInterval(WS.tEl);WS.tEl=null;}
+  $('#rIc').textContent='🔤';
+  $('#rScore').textContent=WS.puz.words.length+' words';
+  $('#rSub').textContent='Found all '+WS.puz.words.length+' in '+Math.floor(t/60)+':'+String(t%60).padStart(2,'0')+'! 🎉';
+  $('#rBest').textContent='total finds (all puzzles): '+Object.values(save.wsBest).reduce((a,b)=>a+(b||0),0);
+  $('#rRank').textContent=t<60?'⚡ Lightning Eyes':t<120?'🦅 Sharp Eyes':'📖 Studious';
+  $('#rVerse').innerHTML='“Seek, and ye shall find.” — Matthew 7:7 🙏';
+  show('result');
+}
+function quitWS(){ if(WS&&WS.tEl){clearInterval(WS.tEl);WS.tEl=null;} WS=null; goMenu(); }
+window.quitQuiz=quitQuiz;window.goMenu=goMenu;window.replay=replay;window.quitWS=quitWS;
 </script>
 </body>
 </html>
