@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0b0a14">
+<title>Word Up — Bible & Brain Trivia</title>
+<meta name="description" content="Word Up — free Bible & general-knowledge trivia. Test your faith and your smarts. No download, just tap and play.">
+<style>
+  :root{
+    --bg-0:#08070f; --bg-1:#0b0a14; --bg-2:#15131f; --bg-3:#262236;
+    --ink:#f6f4ff; --soft:#cfc9e6; --muted:#8a83a8;
+    --gold:#f5c542; --gold-2:#ffe08a; --purple:#a78bff; --pink:#ff5d8f; --green:#3ddc84; --red:#ff5d6c; --blue:#5fb6ff;
+    --font:"Trebuchet MS","Segoe UI",system-ui,-apple-system,sans-serif;
+    --arcade:"Arial Black","Trebuchet MS",system-ui,sans-serif;
+    --shadow:0 12px 32px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%}
+  body{font-family:var(--font);color:var(--ink);background:radial-gradient(1100px 700px at 50% -8%,#1c1733,var(--bg-1) 55%,var(--bg-0));-webkit-user-select:none;user-select:none}
+  #app{position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden}
+  .screen{position:absolute;inset:0;display:none;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .screen.on{display:flex;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .wrap{width:100%;max-width:680px;margin:0 auto;padding:18px 18px 40px}
+
+  /* splash */
+  #splash{align-items:center;justify-content:center;text-align:center}
+  .sp-ic{font-size:78px;filter:drop-shadow(0 6px 18px rgba(167,139,255,.5));animation:bob 2.6s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .sp-title{font-family:var(--arcade);font-size:clamp(44px,15vw,84px);letter-spacing:2px;margin:6px 0 0;
+    background:linear-gradient(180deg,#fff,var(--purple) 55%,var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 2px 0 rgba(0,0,0,.15)}
+  .sp-sub{color:var(--soft);letter-spacing:2px;font-size:13px;margin-top:2px}
+  .sp-verse{color:var(--muted);font-size:12px;font-style:italic;max-width:320px;margin:18px auto 0;line-height:1.6}
+  .sp-tap{margin-top:26px;color:var(--gold);letter-spacing:2px;font-size:13px;animation:blink 1.3s ease-in-out infinite}
+  @keyframes blink{0%,100%{opacity:.4}50%{opacity:1}}
+
+  /* topbar */
+  .topbar{display:flex;align-items:center;gap:10px;padding:14px 16px;padding-top:max(14px,env(safe-area-inset-top))}
+  .tb-back{width:42px;height:42px;flex:0 0 auto;border-radius:12px;border:1px solid var(--bg-3);background:var(--bg-2);color:var(--purple);font-size:20px;cursor:pointer}
+  .tb-back:active{transform:scale(.92)}
+  .tb-title{flex:1;font-family:var(--arcade);font-size:18px;letter-spacing:.5px}
+  .tb-score{background:linear-gradient(180deg,#2a2410,#1a1608);border:1px solid #6b551c;border-radius:999px;padding:7px 14px;font-weight:800;color:var(--gold-2);font-size:14px}
+
+  /* mode cards */
+  .lead{font-size:13px;color:var(--muted);letter-spacing:2px;margin:4px 2px 12px}
+  .modes{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+  .mode{position:relative;border-radius:18px;padding:18px 16px;cursor:pointer;border:1px solid var(--bg-3);overflow:hidden;
+    background:linear-gradient(180deg,var(--bg-2),var(--bg-1));box-shadow:var(--shadow);transition:transform .12s,border-color .2s,box-shadow .2s;--mc:var(--purple)}
+  .mode:hover{transform:translateY(-3px);border-color:var(--mc);box-shadow:0 16px 36px -14px var(--mc)}
+  .mode:active{transform:scale(.97)}
+  .mode .acc{position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--mc),transparent 85%)}
+  .mode .mi{font-size:42px;line-height:1;filter:drop-shadow(0 3px 10px color-mix(in srgb,var(--mc) 60%,transparent))}
+  .mode .mn{font-family:var(--arcade);font-size:16px;margin-top:8px}
+  .mode .md{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.35;min-height:30px}
+  .mode .mb{font-size:10px;color:var(--mc);margin-top:8px;font-weight:800;letter-spacing:.5px}
+  .mode.soon{opacity:.5;cursor:default}
+  .mode.soon:hover{transform:none;border-color:var(--bg-3);box-shadow:var(--shadow)}
+  .mode .lock{position:absolute;top:12px;right:14px;font-size:13px}
+
+  /* quiz */
+  .qcat{font-size:11px;letter-spacing:2px;color:var(--mc,var(--purple));font-weight:800;text-align:center;margin-top:4px}
+  .qprog{display:flex;gap:5px;justify-content:center;margin:12px 0}
+  .qprog i{width:22px;height:5px;border-radius:3px;background:var(--bg-3)}
+  .qprog i.done{background:var(--purple)} .qprog i.cur{background:var(--gold)}
+  .qbar{height:6px;border-radius:4px;background:var(--bg-3);overflow:hidden;margin:6px 0 16px}
+  .qbar i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--gold));transition:width .25s linear}
+  .qtext{font-size:clamp(19px,5vw,26px);font-weight:800;line-height:1.35;text-align:center;margin:10px 0 20px;min-height:90px;display:flex;align-items:center;justify-content:center}
+  .opts{display:grid;gap:11px}
+  .opt{padding:16px 18px;border-radius:14px;border:1px solid var(--bg-3);background:var(--bg-2);font-size:15px;font-weight:700;text-align:left;cursor:pointer;color:var(--ink);transition:transform .1s,border-color .15s,background .15s}
+  .opt:hover{border-color:var(--purple)} .opt:active{transform:scale(.98)}
+  .opt.right{background:linear-gradient(180deg,rgba(61,220,132,.25),rgba(61,220,132,.08));border-color:var(--green);color:#bff6d4}
+  .opt.wrong{background:linear-gradient(180deg,rgba(255,93,108,.22),rgba(255,93,108,.06));border-color:var(--red);color:#ffc6cc}
+  .opt[disabled]{cursor:default}
+  .qfeed{text-align:center;margin-top:16px;min-height:48px;font-size:13px;color:var(--soft);line-height:1.5}
+  .qfeed .vref{color:var(--gold)}
+  .qstreak{text-align:center;color:var(--gold);font-size:12px;font-weight:800;margin-top:2px;min-height:16px}
+
+  /* results */
+  #result{align-items:center;justify-content:center;text-align:center}
+  .r-ic{font-size:64px}
+  .r-score{font-family:var(--arcade);font-size:clamp(40px,12vw,68px);color:var(--gold-2);margin:4px 0}
+  .r-sub{color:var(--soft);font-size:15px}
+  .r-best{color:var(--muted);font-size:12px;margin-top:6px}
+  .r-rank{font-size:18px;font-weight:800;margin-top:14px}
+  .r-verse{color:var(--muted);font-size:12px;font-style:italic;max-width:340px;margin:18px auto 0;line-height:1.6}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:15px 20px;border-radius:14px;border:none;cursor:pointer;
+    font-family:var(--font);font-weight:800;font-size:15px;letter-spacing:.5px;color:#1a1230;
+    background:linear-gradient(180deg,var(--gold-2),var(--gold) 60%,#b8862b);box-shadow:0 5px 0 #7a5a18,var(--shadow)}
+  .btn:active{transform:translateY(3px);box-shadow:0 2px 0 #7a5a18}
+  .btn.sec{color:var(--ink);background:linear-gradient(180deg,var(--bg-2),var(--bg-1));box-shadow:0 4px 0 #0a0813;border:1px solid var(--bg-3)}
+  .btn.wide{width:100%}
+  .btn-row{display:flex;gap:11px;margin-top:24px;width:100%;max-width:380px}
+  .btn-row .btn{flex:1}
+
+  /* standalone-only cross-links (hidden inside the arcade iframe) */
+  #pa-links{position:fixed;left:0;right:0;bottom:0;display:flex;gap:10px;justify-content:center;padding:10px;
+    padding-bottom:max(10px,env(safe-area-inset-bottom));background:linear-gradient(0deg,var(--bg-0),transparent);z-index:50}
+  #pa-links a{display:flex;align-items:center;gap:6px;padding:9px 15px;border-radius:999px;text-decoration:none;font-size:12px;font-weight:800;border:1px solid var(--bg-3);background:var(--bg-2);color:var(--soft)}
+  #pa-links a.word{border-color:#6b551c;color:var(--gold-2)}
+  #pa-links a:active{transform:scale(.96)}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <section class="screen on" id="splash">
+    <div class="sp-ic">📖</div>
+    <div class="sp-title">WORD UP</div>
+    <div class="sp-sub">BIBLE &amp; BRAIN TRIVIA</div>
+    <div class="sp-verse" id="spVerse"></div>
+    <div class="sp-tap">▸ TAP TO PLAY ◂</div>
+  </section>
+
+  <section class="screen" id="menu">
+    <div class="topbar"><div class="tb-title">📖 Word Up</div><div class="tb-score" id="menuBest">best —</div></div>
+    <div class="wrap">
+      <div class="lead">🎯 PICK A QUIZ · 10 questions a round</div>
+      <div class="modes" id="modeGrid"></div>
+      <div style="text-align:center;margin-top:22px;color:var(--muted);font-size:11px;line-height:1.6" id="menuFoot"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="quiz">
+    <div class="topbar">
+      <div class="tb-back" onclick="quitQuiz()">‹</div>
+      <div class="tb-title" id="qTitle">Quiz</div>
+      <div class="tb-score" id="qScore">0</div>
+    </div>
+    <div class="wrap">
+      <div class="qcat" id="qCat"></div>
+      <div class="qprog" id="qProg"></div>
+      <div class="qbar"><i id="qBar" style="width:100%"></i></div>
+      <div class="qtext" id="qText"></div>
+      <div class="opts" id="qOpts"></div>
+      <div class="qstreak" id="qStreak"></div>
+      <div class="qfeed" id="qFeed"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="result">
+    <div class="wrap" style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;min-height:70vh">
+      <div class="r-ic" id="rIc">🏆</div>
+      <div class="r-score" id="rScore">0</div>
+      <div class="r-sub" id="rSub"></div>
+      <div class="r-best" id="rBest"></div>
+      <div class="r-rank" id="rRank"></div>
+      <div class="r-verse" id="rVerse"></div>
+      <div class="btn-row">
+        <button class="btn sec" onclick="goMenu()">‹ Menu</button>
+        <button class="btn" onclick="replay()">Play again ↻</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div id="pa-links">
+  <a href="https://snailgamedev.github.io/PeakArcade/">🎮 More games</a>
+  <a class="word" href="https://snailgamedev.github.io/PeakArcade/word.html">✝ The Word</a>
+</div>
+
+<script>
+"use strict";
+const VERSION='1.0';
+const $=s=>document.querySelector(s);
+const SAVE_KEY='wordup:save:v1';
+let save=load(); function load(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{best:{}}}catch(e){return {best:{}}}}
+function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
+
+/* hide the back-to-arcade links when running INSIDE the Peak Arcade iframe (the hub has its own ✕) */
+const EMBEDDED=(()=>{try{return window.self!==window.top}catch(e){return true}})();
+if(EMBEDDED){const el=$('#pa-links');if(el)el.style.display='none';}
+
+/* ---------- splash verses (rotating) ---------- */
+const SPLASH_VERSES=[
+  ['“Study to shew thyself approved unto God… rightly dividing the word of truth.”','2 Timothy 2:15'],
+  ['“Thy word is a lamp unto my feet, and a light unto my path.”','Psalm 119:105'],
+  ['“Wisdom is the principal thing; therefore get wisdom.”','Proverbs 4:7'],
+  ['“These were more noble… they searched the scriptures daily.”','Acts 17:11'],
+  ['“The fear of the LORD is the beginning of knowledge.”','Proverbs 1:7']
+];
+(function(){const v=SPLASH_VERSES[Math.floor(Math.random()*SPLASH_VERSES.length)];$('#spVerse').innerHTML=v[0]+'<br><span style="color:var(--gold)">— '+v[1]+'</span>';})();
+
+/* ---------- QUESTION BANK ----------
+   q: question · o: 4 options · a: index of the correct option · v: (Bible) reference shown after */
+const BANK={
+  bible:[
+    {q:'Who built an ark to survive the great flood?',o:['Moses','Noah','Abraham','David'],a:1,v:'Genesis 6'},
+    {q:'How many days and nights did it rain during the flood?',o:['7','12','40','100'],a:2,v:'Genesis 7:12'},
+    {q:'Who was thrown into the lions’ den but unharmed?',o:['Daniel','Elijah','Jonah','Paul'],a:0,v:'Daniel 6'},
+    {q:'In whose belly did Jonah spend three days?',o:['A whale (great fish)','A lion','A serpent','A cave'],a:0,v:'Jonah 1:17'},
+    {q:'Who led the Israelites out of Egypt?',o:['Joshua','Aaron','Moses','Joseph'],a:2,v:'Exodus'},
+    {q:'How many disciples did Jesus choose?',o:['7','10','12','40'],a:2,v:'Matthew 10'},
+    {q:'Who denied Jesus three times before the rooster crowed?',o:['Judas','Peter','Thomas','John'],a:1,v:'Luke 22:61'},
+    {q:'In which town was Jesus born?',o:['Nazareth','Jerusalem','Bethlehem','Capernaum'],a:2,v:'Luke 2:4-7'},
+    {q:'What is the first book of the Bible?',o:['Exodus','Genesis','Psalms','Matthew'],a:1,v:'Genesis 1:1'},
+    {q:'What is the last book of the Bible?',o:['Jude','Acts','Revelation','Malachi'],a:2,v:'Revelation'},
+    {q:'Who was swallowed up after slinging a stone at a giant?… who threw it?',o:['Saul','David','Samson','Gideon'],a:1,v:'1 Samuel 17'},
+    {q:'What did God create on the first day?',o:['Animals','Light','Man','The sea'],a:1,v:'Genesis 1:3'},
+    {q:'Who was the strong man who lost his power when his hair was cut?',o:['Samson','Goliath','Saul','Esau'],a:0,v:'Judges 16'},
+    {q:'How many books are in the Bible (Protestant canon)?',o:['39','27','66','72'],a:2,v:'—'},
+    {q:'Who baptized Jesus in the Jordan River?',o:['Peter','John the Baptist','Paul','Andrew'],a:1,v:'Matthew 3'},
+    {q:'“For God so loved the world, that he gave his only begotten ___.”',o:['Word','Son','Spirit','Kingdom'],a:1,v:'John 3:16'},
+    {q:'What did Jesus turn water into at the wedding in Cana?',o:['Bread','Oil','Wine','Honey'],a:2,v:'John 2'},
+    {q:'Who wrote most of the Psalms?',o:['Solomon','David','Moses','Isaiah'],a:1,v:'Psalms'},
+    {q:'On which day did God rest from creation?',o:['5th','6th','7th','3rd'],a:2,v:'Genesis 2:2'},
+    {q:'Who was the mother of Jesus?',o:['Martha','Mary','Elizabeth','Ruth'],a:1,v:'Luke 1'},
+    {q:'What sea did Moses part for the Israelites?',o:['Dead Sea','Red Sea','Sea of Galilee','Mediterranean'],a:1,v:'Exodus 14'},
+    {q:'How many people were saved on the ark?',o:['2','8','12','40'],a:1,v:'1 Peter 3:20'},
+    {q:'Who betrayed Jesus for thirty pieces of silver?',o:['Peter','Judas Iscariot','Thomas','Pilate'],a:1,v:'Matthew 26:15'},
+    {q:'What is the “fruit of the Spirit” that comes first in the list?',o:['Joy','Peace','Love','Patience'],a:2,v:'Galatians 5:22'},
+    {q:'Who interpreted Pharaoh’s dreams and rose to power in Egypt?',o:['Joseph','Daniel','Jacob','Aaron'],a:0,v:'Genesis 41'}
+  ],
+  world:[
+    {q:'What is the largest planet in our solar system?',o:['Saturn','Earth','Jupiter','Neptune'],a:2},
+    {q:'How many continents are there on Earth?',o:['5','6','7','8'],a:2},
+    {q:'What is the chemical symbol for gold?',o:['Gd','Au','Ag','Go'],a:1},
+    {q:'Which ocean is the largest?',o:['Atlantic','Indian','Arctic','Pacific'],a:3},
+    {q:'How many sides does a hexagon have?',o:['5','6','7','8'],a:1},
+    {q:'What is the tallest mountain on Earth?',o:['K2','Everest','Kilimanjaro','Denali'],a:1},
+    {q:'Which planet is known as the Red Planet?',o:['Venus','Mars','Mercury','Jupiter'],a:1},
+    {q:'What gas do plants breathe in for photosynthesis?',o:['Oxygen','Nitrogen','Carbon dioxide','Helium'],a:2},
+    {q:'How many strings does a standard guitar have?',o:['4','5','6','7'],a:2},
+    {q:'What is the fastest land animal?',o:['Lion','Cheetah','Horse','Gazelle'],a:1},
+    {q:'Water is made of hydrogen and which other element?',o:['Carbon','Oxygen','Nitrogen','Helium'],a:1},
+    {q:'How many minutes are in a full day?',o:['1,200','1,440','2,400','960'],a:1},
+    {q:'Which country has the largest population?',o:['USA','India','China','Brazil'],a:1},
+    {q:'What do you call a baby kangaroo?',o:['Cub','Joey','Kit','Calf'],a:1},
+    {q:'How many degrees are in a right angle?',o:['45','90','180','360'],a:1},
+    {q:'What is the hardest natural substance on Earth?',o:['Gold','Iron','Diamond','Quartz'],a:2},
+    {q:'Which is the smallest prime number?',o:['0','1','2','3'],a:2},
+    {q:'What is the largest mammal in the world?',o:['Elephant','Blue whale','Giraffe','Hippo'],a:1},
+    {q:'How many colors are in a rainbow?',o:['5','6','7','9'],a:2},
+    {q:'What planet do we live on?',o:['Mars','Venus','Earth','Saturn'],a:2}
+  ]
+};
+const RANKS=[ [0,'🌱 Beginner'],[3,'📗 Learner'],[5,'📘 Scholar'],[7,'📙 Sharp'],[9,'🧠 Genius'],[10,'👑 Word Up MASTER'] ];
+
+/* ---------- MODES ---------- */
+const MODES=[
+  {id:'bible', name:'Bible Trivia', ic:'✝️', mc:'var(--gold)', desc:'25 questions on the Word — OT to NT.', soon:false},
+  {id:'world', name:'World Trivia', ic:'🌍', mc:'var(--blue)', desc:'Science, nature, space & general smarts.', soon:false},
+  {id:'mixed', name:'Mixed Mode', ic:'🎲', mc:'var(--purple)', desc:'A shuffled blend of Bible + world.', soon:false},
+  {id:'search', name:'Word Search', ic:'🔤', mc:'var(--green)', desc:'Find the hidden Bible words. Coming soon.', soon:true},
+  {id:'cross', name:'Crossword', ic:'✏️', mc:'var(--pink)', desc:'Scripture-themed crossword. Coming soon.', soon:true},
+  {id:'daily', name:'Daily 10', ic:'📅', mc:'var(--gold-2)', desc:'A fresh 10 every day. Coming soon.', soon:true}
+];
+
+/* ---------- screen routing ---------- */
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$('#'+id).classList.add('on');}
+function goMenu(){renderMenu();show('menu');}
+$('#splash').addEventListener('click',goMenu);
+
+function renderMenu(){
+  const grid=$('#modeGrid');grid.innerHTML='';
+  MODES.forEach(m=>{
+    const best=save.best[m.id];
+    const el=document.createElement('div');el.className='mode'+(m.soon?' soon':'');el.style.setProperty('--mc',m.mc);
+    el.innerHTML=`<div class="acc"></div>${m.soon?'<div class="lock">🔒</div>':''}<div class="mi">${m.ic}</div><div class="mn">${m.name}</div><div class="md">${m.desc}</div>`+
+      (m.soon?'<div class="mb">COMING SOON</div>':`<div class="mb">${best!=null?'🏆 best '+best+'/10':'tap to play ▸'}</div>`);
+    if(!m.soon) el.onclick=()=>startQuiz(m.id);
+    grid.appendChild(el);
+  });
+  const bests=Object.values(save.best);const top=bests.length?Math.max(...bests):null;
+  $('#menuBest').textContent=top!=null?('best '+top+'/10'):'best —';
+  $('#menuFoot').innerHTML='✝️ Come for the brain workout — leave knowing the Word a little better. 🙏<br>v'+VERSION+' · Word Up';
+}
+
+/* ---------- quiz engine ---------- */
+let Q=null;
+function pickQuestions(mode){
+  let pool;
+  if(mode==='bible') pool=BANK.bible.slice();
+  else if(mode==='world') pool=BANK.world.slice();
+  else pool=BANK.bible.concat(BANK.world);   // mixed
+  // shuffle + take 10
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  return pool.slice(0,10);
+}
+function startQuiz(mode){
+  const list=pickQuestions(mode);
+  Q={mode,list,i:0,score:0,streak:0,locked:false};
+  $('#qTitle').textContent=(MODES.find(m=>m.id===mode)||{}).name||'Quiz';
+  show('quiz');renderQ();
+}
+function renderQ(){
+  const q=Q.list[Q.i];Q.locked=false;
+  $('#qScore').textContent=Q.score;
+  $('#qCat').textContent=(Q.mode==='mixed'?(q.v!=null?'✝️ BIBLE':'🌍 WORLD'):(Q.mode==='bible'?'✝️ BIBLE':'🌍 WORLD'))+' · Q'+(Q.i+1)+' OF 10';
+  // progress dots
+  let prog='';for(let k=0;k<10;k++)prog+=`<i class="${k<Q.i?'done':k===Q.i?'cur':''}"></i>`;$('#qProg').innerHTML=prog;
+  $('#qText').textContent=q.q;
+  $('#qStreak').textContent=Q.streak>=2?('🔥 '+Q.streak+' in a row!'):'';
+  $('#qFeed').innerHTML='';
+  // options (shuffle display order but track the correct one)
+  const order=q.o.map((t,idx)=>({t,idx}));
+  for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
+  const opts=$('#qOpts');opts.innerHTML='';
+  order.forEach(o=>{
+    const b=document.createElement('button');b.className='opt';b.textContent=o.t;
+    b.onclick=()=>answer(b,o.idx===q.a,q);
+    opts.appendChild(b);
+  });
+  $('#qBar').style.width='100%';
+}
+function answer(btn,correct,q){
+  if(Q.locked)return;Q.locked=true;
+  const opts=$('#qOpts');[...opts.children].forEach(b=>b.disabled=true);
+  if(correct){
+    btn.classList.add('right');Q.score++;Q.streak++;
+    $('#qScore').textContent=Q.score;
+    $('#qFeed').innerHTML='✅ Correct!'+(q.v&&q.v!=='—'?' <span class="vref">— '+q.v+'</span>':'');
+  }else{
+    btn.classList.add('wrong');Q.streak=0;
+    // reveal the right one
+    [...opts.children].forEach(b=>{ if(b.textContent===q.o[q.a]) b.classList.add('right'); });
+    $('#qFeed').innerHTML='❌ The answer: <b>'+q.o[q.a]+'</b>'+(q.v&&q.v!=='—'?' <span class="vref">— '+q.v+'</span>':'');
+  }
+  $('#qStreak').textContent=Q.streak>=2?('🔥 '+Q.streak+' in a row!'):'';
+  setTimeout(()=>{ Q.i++; if(Q.i>=Q.list.length) finishQuiz(); else renderQ(); }, correct?900:1700);
+}
+function finishQuiz(){
+  const s=Q.score;
+  if(save.best[Q.mode]==null||s>save.best[Q.mode]){save.best[Q.mode]=s;persist();}
+  let rank=RANKS[0][1];RANKS.forEach(r=>{if(s>=r[0])rank=r[1];});
+  $('#rIc').textContent=s>=9?'👑':s>=7?'🏆':s>=5?'🎉':'📖';
+  $('#rScore').textContent=s+' / 10';
+  $('#rSub').textContent=s>=9?'Incredible — you KNOW your stuff!':s>=7?'Sharp! Well played.':s>=5?'Solid round — keep climbing.':'Every round teaches you something. 🙏';
+  $('#rBest').textContent='best in this quiz: '+save.best[Q.mode]+'/10';
+  $('#rRank').textContent=rank;
+  $('#rVerse').innerHTML=s>=7?'“Well done, good and faithful servant.” — Matthew 25:21 🙏':'“Let the wise hear and increase in learning.” — Proverbs 1:5 🙏';
+  show('result');
+}
+function replay(){startQuiz(Q.mode);}
+function quitQuiz(){goMenu();}
+window.quitQuiz=quitQuiz;window.goMenu=goMenu;window.replay=replay;
+</script>
+</body>
+</html>
