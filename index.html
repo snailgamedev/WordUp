@@ -227,7 +227,7 @@ if('serviceWorker' in navigator){const had=!!navigator.serviceWorker.controller;
 
 <script>
 "use strict";
-const VERSION='1.6';
+const VERSION='1.7';
 const $=s=>document.querySelector(s);
 const SAVE_KEY='wordup:save:v1';
 let save=load(); function load(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s)return Object.assign({best:{},dailyTs:null,dailyScore:0,wsBest:{}},s,{best:s.best||{},wsBest:s.wsBest||{}});}catch(e){}return {best:{},dailyTs:null,dailyScore:0,wsBest:{}}}
@@ -279,7 +279,7 @@ const SPLASH_VERSES=[
 (function(){const v=SPLASH_VERSES[Math.floor(Math.random()*SPLASH_VERSES.length)];$('#spVerse').innerHTML=v[0]+'<br><span style="color:var(--gold)">— '+v[1]+'</span>';})();
 
 /* ==========================================================================
-   📚 QUESTION BANK — 100+ Bible · 75+ World · all hand-curated
+   📚 QUESTION BANK — 130+ Bible · 75+ World · all hand-curated (v1.7 +20 Bible)
    format: {q, o:[a,b,c,d], a:correctIdx, v:scripture ref (Bible only)}
    ========================================================================== */
 const BANK={
@@ -415,6 +415,28 @@ const BANK={
     {q:'What animal carried Jesus into Jerusalem on Palm Sunday?',o:['Horse','Donkey/colt','Camel','He walked'],a:1,v:'Matthew 21:7'},
     {q:'What was the name of Jesus’ stepfather?',o:['Zacharias','Joseph','James','Simon'],a:1,v:'Matthew 1:16'},
     {q:'Who said “I have fought a good fight, I have finished my course”?',o:['Peter','Paul','James','John'],a:1,v:'2 Timothy 4:7'},
+
+    /* — v1.7 EXPANSION (2026-05-28): 20 new Bible Qs across Psalms, Prophets, Gospels, Epistles — */
+    {q:'Who wrote most of the Psalms?',o:['Moses','David','Solomon','Asaph'],a:1,v:'Book of Psalms'},
+    {q:'"The Lord is my shepherd…" comes from which Psalm?',o:['Psalm 1','Psalm 23','Psalm 91','Psalm 119'],a:1,v:'Psalm 23:1'},
+    {q:'"Thy word is a lamp unto my feet" is in which Psalm?',o:['Psalm 23','Psalm 51','Psalm 119','Psalm 150'],a:2,v:'Psalm 119:105'},
+    {q:'Which Old Testament book is named after a prophet who was swallowed by a great fish?',o:['Jonah','Joel','Amos','Micah'],a:0,v:'Jonah 1:17'},
+    {q:'Which prophet was thrown into a lions\' den and lived?',o:['Daniel','Elijah','Jeremiah','Isaiah'],a:0,v:'Daniel 6:22'},
+    {q:'Who built the first temple in Jerusalem?',o:['David','Solomon','Hezekiah','Josiah'],a:1,v:'1 Kings 6'},
+    {q:'How many wise men/Magi does the Bible specifically name?',o:['3','12','None — count not given','2'],a:2,v:'Matthew 2 (3 gifts, no count of men)'},
+    {q:'Which Gospel was written by a physician?',o:['Matthew','Mark','Luke','John'],a:2,v:'Colossians 4:14'},
+    {q:'Who baptized Jesus?',o:['Peter','John the Baptist','Andrew','James'],a:1,v:'Matthew 3:13'},
+    {q:'Jesus turned water into wine at a wedding in:',o:['Bethlehem','Cana','Capernaum','Jerusalem'],a:1,v:'John 2:1-11'},
+    {q:'How many days was Lazarus in the tomb before Jesus raised him?',o:['1','3','4','7'],a:2,v:'John 11:39'},
+    {q:'Which apostle denied Jesus three times?',o:['Judas','John','Peter','Thomas'],a:2,v:'Matthew 26:75'},
+    {q:'Who replaced Judas Iscariot among the twelve apostles?',o:['Stephen','Matthias','Barnabas','Paul'],a:1,v:'Acts 1:26'},
+    {q:'On which road was Saul confronted by the risen Christ?',o:['Damascus road','Emmaus road','Via Dolorosa','Galilee road'],a:0,v:'Acts 9:3'},
+    {q:'"For God so loved the world…" is which verse?',o:['John 1:1','John 3:16','John 14:6','Romans 3:23'],a:1,v:'John 3:16'},
+    {q:'"For I know the plans I have for you…" comes from which prophet?',o:['Isaiah','Jeremiah','Ezekiel','Daniel'],a:1,v:'Jeremiah 29:11'},
+    {q:'What is the shortest verse in the Bible?',o:['"Jesus wept."','"God is love."','"Be still."','"Pray always."'],a:0,v:'John 11:35'},
+    {q:'How many books are in the New Testament?',o:['21','27','39','66'],a:1,v:'NT canon'},
+    {q:'How many books are in the Old Testament (Protestant)?',o:['27','39','46','66'],a:1,v:'OT canon'},
+    {q:'Which book of the Bible never mentions God by name?',o:['Ruth','Esther','Ecclesiastes','Song of Solomon'],a:1,v:'Book of Esther'},
   ],
   world:[
     /* — SCIENCE & SPACE — */
