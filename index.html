@@ -227,7 +227,7 @@ if('serviceWorker' in navigator){const had=!!navigator.serviceWorker.controller;
 
 <script>
 "use strict";
-const VERSION='1.7';
+const VERSION='2.0';
 const $=s=>document.querySelector(s);
 const SAVE_KEY='wordup:save:v1';
 let save=load(); function load(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s)return Object.assign({best:{},dailyTs:null,dailyScore:0,wsBest:{}},s,{best:s.best||{},wsBest:s.wsBest||{}});}catch(e){}return {best:{},dailyTs:null,dailyScore:0,wsBest:{}}}
@@ -526,6 +526,31 @@ const WS_PUZZLES=[
   {cat:'Fruits of the Spirit', words:['LOVE','JOY','PEACE','KIND','GOOD','FAITH','GENTLE','SELF']},
   {cat:'Bible People',   words:['MOSES','DAVID','RUTH','MARY','NOAH','PAUL','ISAAC','SARAH']},
   {cat:'Books of the Bible',  words:['GENESIS','EXODUS','PSALMS','ACTS','JOHN','LUKE','MARK','JUDE']},
+  /* v2.0 expansion · 8 new themes */
+  {cat:'Miracles of Jesus', words:['HEAL','WALK','WATER','FEED','RAISE','BLIND','LEPER','STORM']},
+  {cat:'Prophets', words:['ISAIAH','JEREMIAH','EZEKIEL','DANIEL','HOSEA','JOEL','AMOS','JONAH']},
+  {cat:'Kings of Israel', words:['SAUL','DAVID','SOLOMON','JOSIAH','HEZEKIAH','AHAB','OMRI','JEHU']},
+  {cat:'Paul Letters', words:['ROMANS','GALATIA','EPHESUS','PHILIPPI','COLOSSAE','THESS','TIMOTHY','TITUS']},
+  {cat:'Parables', words:['SEED','COIN','SHEEP','TALENTS','VINEYARD','SOWER','BANQUET','SAMARITAN']},
+  {cat:'The Beatitudes', words:['BLESS','POOR','MEEK','MOURN','MERCY','PURE','PEACE','PERSECUTED']},
+  {cat:'Easter', words:['EMPTY','RISEN','TOMB','MARY','ANGEL','STONE','CROSS','THIRD']},
+  {cat:'Old Testament Heroes', words:['NOAH','ABRAHAM','JOSEPH','MOSES','JOSHUA','SAMSON','GIDEON','DEBORAH']},
+];
+
+/* ---------- 📝 VERSE FILL (renamed from "Crossword" · ships the previously-soon mode) ---------- */
+const VERSE_FILLS = [
+  { ref:'John 3:16',  parts:['For ',['GOD'],' so loved the world, that he gave his only ',['BEGOTTEN'],' Son'] },
+  { ref:'Phil 4:13',  parts:['I can do all things through ',['CHRIST'],' which strengtheneth me'] },
+  { ref:'Prov 3:5',   parts:['Trust in the ',['LORD'],' with all thine ',['HEART']] },
+  { ref:'Joshua 1:9', parts:['Be ',['STRONG'],' and of a good ',['COURAGE']] },
+  { ref:'Psalm 23:1', parts:['The Lord is my ',['SHEPHERD'],'; I shall not ',['WANT']] },
+  { ref:'Psalm 119:105', parts:['Thy ',['WORD'],' is a ',['LAMP'],' unto my feet'] },
+  { ref:'Hebrews 11:1', parts:['Now ',['FAITH'],' is the substance of things hoped for'] },
+  { ref:'Psalm 46:10', parts:['Be still, and ',['KNOW'],' that I am ',['GOD']] },
+  { ref:'2 Tim 1:7',  parts:['God hath not given us the spirit of ',['FEAR'],'; but of power, and of love'] },
+  { ref:'Matt 7:7',   parts:['Ask, and it shall be ',['GIVEN'],' you; seek, and ye shall ',['FIND']] },
+  { ref:'Romans 8:28', parts:['All things work together for ',['GOOD'],' to them that love God'] },
+  { ref:'Phil 4:6',   parts:['Be careful for nothing; but in every thing by ',['PRAYER']] }
 ];
 
 /* ---------- MODES ---------- */
@@ -535,7 +560,7 @@ const MODES=[
   {id:'mixed',  name:'Mixed Mode',    ic:'🎲',  mc:'var(--purple)',desc:'A shuffled blend of Bible + world.',                     soon:false},
   {id:'daily',  name:'Daily 10',      ic:'📅',  mc:'var(--gold-2)',desc:'A FRESH 10 every day · same for everyone today.',         soon:false},
   {id:'ws',     name:'Word Search',   ic:'🔤',  mc:'var(--green)', desc:'Find hidden Bible-themed words on a grid.',              soon:false},
-  {id:'cross',  name:'Crossword',     ic:'✏️',  mc:'var(--pink)',  desc:'Scripture-themed crossword. Coming soon.',                soon:true},
+  {id:'fill',   name:'Verse Fill',    ic:'✏️',  mc:'var(--pink)',  desc:'Bible verses with blanks · pick the missing words to complete.', soon:false},
 ];
 
 const RANKS=[ [0,'🌱 Beginner'],[3,'📗 Learner'],[5,'📘 Scholar'],[7,'📙 Sharp'],[9,'🧠 Genius'],[10,'👑 WORD UP MASTER'] ];
@@ -556,6 +581,8 @@ function showTutorial(){
         <li><b>✝️ Bible · 🌍 World · 🎲 Mixed</b> — 10-question trivia rounds. Tap the right answer, build a 🔥 streak. Bible questions show the scripture ref so you learn while you play.</li>
         <li><b>📅 Daily 10</b> — a fresh 10 every day, the SAME 10 for everyone (your timezone). Come back tomorrow for new ones.</li>
         <li><b>🔤 Word Search</b> — tap &amp; drag to find hidden words. Horizontal, vertical, diagonal, forward or backward — like a real one. 🎯</li>
+        <li><b>✏️ Verse Fill</b> — Bible verses with blanks · tap the missing words to complete · 5 verses per round.</li>
+        <li><b>🎯 50/50 hint</b> — stuck on a trivia Q? Tap the hint once per round to remove 2 wrong answers.</li>
       </ul>
       <p style="color:var(--muted);font-style:italic;font-size:11px">"Study to shew thyself approved unto God." — 2 Timothy 2:15 🙏</p>
       <button class="btn" onclick="closeTutorial()">Let's go ▸</button>
@@ -574,6 +601,7 @@ function renderMenu(){
     let bestLabel='tap to play ▸';
     if(m.id==='ws'){ const wb=save.wsBest&&Object.values(save.wsBest).reduce((a,b)=>a+(b||0),0); if(wb) bestLabel='🏆 '+wb+' total finds'; }
     else if(m.id==='daily'){ bestLabel = save.dailyTs===todayStr() ? '✅ today: '+save.dailyScore+'/10' : '🔥 fresh today'; }
+    else if(m.id==='fill'){ if(save.best.fill!=null) bestLabel='🏆 best '+save.best.fill+'/5'; }
     else if(save.best[m.id]!=null) bestLabel='🏆 best '+save.best[m.id]+'/10';
     const ding = m.id==='daily' && save.dailyTs!==todayStr() ? '<div class="ding">NEW</div>' : '';
     el.innerHTML=`<div class="acc"></div>${m.soon?'<div class="lock">🔒</div>':ding}<div class="mi">${m.ic}</div><div class="mn">${m.name}</div><div class="md">${m.desc}</div>`+
@@ -584,11 +612,12 @@ function renderMenu(){
   const bests=Object.values(save.best);const top=bests.length?Math.max(...bests):null;
   $('#menuBest').textContent=top!=null?('best '+top+'/10'):'best —';
   const totalQs=BANK.bible.length+BANK.world.length;
-  $('#menuFoot').innerHTML='✝️ Bible knowledge + brain workout · 🙏<br>'+totalQs+' questions · '+WS_PUZZLES.length+' word searches · daily fresh 10 · v'+VERSION;
+  $('#menuFoot').innerHTML='✝️ Bible knowledge + brain workout · 🙏<br>'+totalQs+' questions · '+WS_PUZZLES.length+' word searches · '+VERSE_FILLS.length+' verse-fills · daily fresh 10 · 50/50 hints · v'+VERSION;
 }
 function route(id){
   if(id==='ws') startWS();
   else if(id==='daily') startDaily();
+  else if(id==='fill') startFill();
   else startQuiz(id);
 }
 
@@ -606,7 +635,7 @@ function pickQuestions(mode,count){
 }
 function startQuiz(mode){
   const list=pickQuestions(mode,10);
-  Q={mode,list,i:0,score:0,streak:0,locked:false,results:[],isDaily:false};
+  Q={mode,list,i:0,score:0,streak:0,locked:false,results:[],isDaily:false,hintUsed:false};
   $('#qTitle').textContent=(MODES.find(m=>m.id===mode)||{}).name||'Quiz';
   show('quiz');renderQ();
 }
@@ -623,7 +652,7 @@ function startDaily(){
   let r=seed;function rand(){r=(r*1103515245+12345)&0x7fffffff;return r/0x7fffffff;}
   for(let i=pool.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
   const list=pool.slice(0,10);
-  Q={mode:'daily',list,i:0,score:0,streak:0,locked:false,results:[],isDaily:true};
+  Q={mode:'daily',list,i:0,score:0,streak:0,locked:false,results:[],isDaily:true,hintUsed:false};
   $('#qTitle').textContent='📅 Daily 10';
   show('quiz');renderQ();
 }
@@ -641,6 +670,25 @@ function renderQ(){
   const opts=$('#qOpts');opts.innerHTML='';
   order.forEach(o=>{const b=document.createElement('button');b.className='opt';b.textContent=o.t;b.onclick=()=>answer(b,o.idx===q.a,q);opts.appendChild(b);});
   $('#qBar').style.width='100%';
+  /* 🎯 50/50 hint button — 1 per round · removes 2 wrong answers */
+  let hintBtn = document.getElementById('hintBtn');
+  if (!hintBtn){
+    hintBtn = document.createElement('button');
+    hintBtn.id = 'hintBtn'; hintBtn.className = 'btn sec';
+    hintBtn.style.cssText = 'margin-top:10px;background:linear-gradient(180deg,#3b3015,#2a1f08);border-color:#b8862b;color:var(--gold-2)';
+    opts.parentNode.appendChild(hintBtn);
+  }
+  hintBtn.style.display = Q.hintUsed ? 'none' : 'block';
+  hintBtn.textContent = '🎯 50/50 · remove 2 wrong (1 left)';
+  hintBtn.onclick = () => {
+    if (Q.locked || Q.hintUsed) return;
+    Q.hintUsed = true; hintBtn.style.display = 'none';
+    const wrongBtns = [...opts.children].filter(b => b.textContent !== q.o[q.a]);
+    // remove 2 wrong
+    const toHide = wrongBtns.sort(()=>Math.random()-0.5).slice(0, 2);
+    toHide.forEach(b => { b.style.opacity='.25'; b.style.pointerEvents='none'; });
+    SFX.right();
+  };
 }
 function answer(btn,correct,q){
   if(Q.locked)return;Q.locked=true;
@@ -774,7 +822,148 @@ function finishWS(){
   show('result');
 }
 function quitWS(){ if(WS&&WS.tEl){clearInterval(WS.tEl);WS.tEl=null;} WS=null; goMenu(); }
+
+/* ==========================================================================
+   ✏️ VERSE FILL — pick the missing words to complete a Bible verse (v2.0 mode)
+   ========================================================================== */
+let VF=null;
+function startFill(){
+  // Pick a verse · 5 per round
+  const pool = VERSE_FILLS.slice();
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  const list = pool.slice(0, 5);
+  VF = { list, i:0, score:0, streak:0, results:[], startedAt:Date.now() };
+  show('quiz'); renderFill();
+}
+function renderFill(){
+  const v = VF.list[VF.i];
+  $('#qTitle').textContent = '✏️ Verse Fill';
+  $('#qScore').textContent = VF.score;
+  $('#qCat').textContent = '✏️ FILL THE BLANKS · Q'+(VF.i+1)+' OF '+VF.list.length;
+  let prog=''; for(let k=0;k<VF.list.length;k++){const cls=k<VF.i?(VF.results[k]?'done':'miss'):k===VF.i?'cur':'';prog+=`<i class="${cls}"></i>`;} $('#qProg').innerHTML=prog;
+  $('#qStreak').textContent = VF.streak>=2 ? ('🔥 '+VF.streak+' in a row!') : '';
+  $('#qFeed').innerHTML='';
+  $('#qBar').style.width='100%';
+  // Build the verse with blank slots
+  const blanks = []; // [{idx, word, slot}]
+  const textHTML = v.parts.map((p, idx) => {
+    if (Array.isArray(p)){
+      blanks.push({ idx: blanks.length, word: p[0], filled: null });
+      return '<span class="vf-blank" data-bidx="'+(blanks.length-1)+'" style="display:inline-block;min-width:90px;padding:5px 10px;margin:0 3px;border-bottom:2px dashed var(--gold);color:var(--muted);font-weight:800;cursor:pointer;background:rgba(245,197,66,.08);border-radius:6px">___</span>';
+    }
+    return p;
+  }).join('');
+  $('#qText').innerHTML = textHTML + '<div style="color:var(--gold);font-weight:800;font-size:11px;letter-spacing:1.5px;margin-top:14px">— ' + v.ref.toUpperCase() + '</div>';
+  // Build pool of choice buttons (correct words + 2 distractors)
+  VF.blanks = blanks;
+  const correctWords = blanks.map(b => b.word);
+  const DISTRACTORS = ['FAITH','LOVE','HOPE','GRACE','TRUTH','LIGHT','PEACE','JOY','MERCY','POWER','HOLY','BLESS','TRUE','RISEN'];
+  let pool = correctWords.slice();
+  while (pool.length < correctWords.length + 3){
+    const d = DISTRACTORS[Math.floor(Math.random() * DISTRACTORS.length)];
+    if (!pool.includes(d)) pool.push(d);
+  }
+  pool.sort(() => Math.random() - 0.5);
+  const opts = $('#qOpts'); opts.innerHTML='';
+  pool.forEach(w => {
+    const b = document.createElement('button'); b.className='opt'; b.textContent = w;
+    b.style.fontSize='15px';
+    b.onclick = () => onVFPick(b, w);
+    opts.appendChild(b);
+  });
+  // remove hint button if present (no 50/50 in verse fill)
+  const hb = document.getElementById('hintBtn'); if (hb) hb.style.display='none';
+  // active blank pointer
+  VF.activeBlank = 0;
+  highlightActiveBlank();
+}
+function highlightActiveBlank(){
+  document.querySelectorAll('.vf-blank').forEach((el,i)=>{
+    if (VF.blanks[i].filled) return;
+    el.style.background = i === VF.activeBlank ? 'rgba(124,92,255,.22)' : 'rgba(245,197,66,.08)';
+    el.style.borderColor = i === VF.activeBlank ? 'var(--purple)' : 'var(--gold)';
+  });
+}
+function onVFPick(btn, word){
+  // Find next unfilled blank to drop into
+  const target = VF.blanks.findIndex(b => !b.filled && b.idx === VF.activeBlank);
+  let idx = target >= 0 ? target : VF.blanks.findIndex(b => !b.filled);
+  if (idx < 0) return;
+  VF.blanks[idx].filled = word;
+  btn.style.opacity = '.35'; btn.style.pointerEvents='none';
+  const blEl = document.querySelector('.vf-blank[data-bidx="'+idx+'"]');
+  if (blEl){
+    blEl.textContent = word;
+    blEl.style.color = 'var(--ink, var(--cream))';
+    blEl.style.background = 'rgba(245,197,66,.18)';
+    blEl.style.borderBottom = '2px solid var(--gold)';
+    blEl.onclick = () => {
+      // tap to clear · restores the button
+      const w = VF.blanks[idx].filled; if (!w) return;
+      VF.blanks[idx].filled = null;
+      blEl.textContent = '___'; blEl.style.color='var(--muted)';
+      blEl.style.background = 'rgba(245,197,66,.08)';
+      [...document.querySelectorAll('#qOpts .opt')].forEach(b=>{ if(b.textContent===w){b.style.opacity='1'; b.style.pointerEvents='auto';} });
+      VF.activeBlank = idx; highlightActiveBlank();
+    };
+  }
+  // advance active blank
+  const nextUnfilled = VF.blanks.findIndex(b => !b.filled);
+  VF.activeBlank = nextUnfilled >= 0 ? nextUnfilled : VF.activeBlank;
+  highlightActiveBlank();
+  SFX.right();
+  // If all blanks filled, check
+  if (VF.blanks.every(b => b.filled)) checkFill();
+}
+function checkFill(){
+  const v = VF.list[VF.i];
+  const allCorrect = VF.blanks.every(b => b.filled.toUpperCase() === b.word.toUpperCase());
+  VF.results[VF.i] = allCorrect;
+  if (allCorrect){
+    VF.score++; VF.streak++; SFX.win(); FX.burst(28);
+    $('#qFeed').innerHTML = '✅ All correct! <span class="vref">— ' + v.ref + '</span>';
+  } else {
+    VF.streak = 0; SFX.wrong();
+    // highlight wrong ones
+    VF.blanks.forEach((b, idx) => {
+      const el = document.querySelector('.vf-blank[data-bidx="'+idx+'"]');
+      if (el){
+        if (b.filled.toUpperCase() === b.word.toUpperCase()){
+          el.style.background = 'rgba(110,224,160,.2)'; el.style.borderColor='#6fe0a0';
+        } else {
+          el.style.background = 'rgba(244,63,94,.18)'; el.style.borderColor='#f43f5e';
+          el.textContent = b.word; el.style.color = '#f43f5e';
+        }
+      }
+    });
+    $('#qFeed').innerHTML = '❌ Close — see corrections above';
+  }
+  setTimeout(()=>{
+    VF.i++;
+    if (VF.i >= VF.list.length) finishFill();
+    else renderFill();
+  }, allCorrect ? 1200 : 2200);
+}
+function finishFill(){
+  const s = VF.score;
+  if (save.best.fill == null || s > save.best.fill){ save.best.fill = s; persist(); }
+  $('#rIc').textContent = s>=5 ? '👑' : s>=4 ? '🏆' : s>=3 ? '🎉' : '📖';
+  $('#rScore').textContent = s + ' / 5';
+  $('#rSub').textContent = s>=5 ? 'Perfect! Scripture locked in.' : s>=3 ? 'Strong knowledge.' : 'Every verse fills you more. 🙏';
+  $('#rBest').textContent = 'best verse-fill: ' + save.best.fill + '/5';
+  $('#rRank').textContent = s>=5 ? '✏️ Scribe' : s>=3 ? '📜 Scholar' : '🌱 Learner';
+  $('#rVerse').innerHTML = s>=4 ? '"Thy word have I hid in mine heart." — Psalm 119:11 🙏' : '"Study to shew thyself approved." — 2 Tim 2:15 🙏';
+  if (s>=3){ FX.burst(60); SFX.win(); } else SFX.fail();
+  show('result');
+}
+
 window.quitQuiz=quitQuiz;window.goMenu=goMenu;window.replay=replay;window.quitWS=quitWS;
+/* keep "replay" working for Verse Fill too */
+const _origReplay = replay;
+window.replay = function(){
+  if (VF){ VF=null; startFill(); return; }
+  _origReplay();
+};
 </script>
 </body>
 </html>
