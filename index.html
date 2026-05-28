@@ -117,6 +117,18 @@
   .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(60px);background:var(--bg-2);border:1px solid var(--bg-3);border-radius:99px;padding:9px 18px;font-size:13px;font-weight:800;color:var(--gold-2);opacity:0;transition:transform .3s,opacity .3s;z-index:210}
   .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 
+  /* 🎓 first-visit tutorial */
+  #tut{position:fixed;inset:0;z-index:300;background:rgba(8,7,15,.78);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:18px;opacity:0;transition:opacity .25s}
+  #tut.on{opacity:1}
+  .tut-card{max-width:440px;width:100%;background:linear-gradient(180deg,var(--bg-2),var(--bg-1));border:1px solid var(--purple);border-radius:18px;padding:24px 22px;box-shadow:0 24px 60px rgba(167,139,255,.25);text-align:center}
+  .tut-ic{font-size:48px;margin-bottom:4px}
+  .tut-card h2{margin:6px 0 8px;font-family:var(--arcade);font-size:22px;background:linear-gradient(180deg,#fff,var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tut-card p{color:var(--soft);font-size:13px;line-height:1.55;margin:8px 0}
+  .tut-card ul{text-align:left;color:var(--soft);font-size:13px;line-height:1.6;padding-left:20px;margin:10px 0 14px}
+  .tut-card ul li{margin-bottom:8px}
+  .tut-card b{color:var(--gold-2)}
+  .tut-card .btn{margin-top:8px}
+
   /* standalone-only cross-links (hidden inside arcade iframe) */
   #pa-links{position:fixed;left:0;right:0;bottom:0;display:flex;gap:10px;justify-content:center;padding:10px;
     padding-bottom:max(10px,env(safe-area-inset-bottom));background:linear-gradient(0deg,var(--bg-0),transparent);z-index:50}
@@ -206,7 +218,7 @@
 
 <script>
 "use strict";
-const VERSION='1.5';
+const VERSION='1.6';
 const $=s=>document.querySelector(s);
 const SAVE_KEY='wordup:save:v1';
 let save=load(); function load(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s)return Object.assign({best:{},dailyTs:null,dailyScore:0,wsBest:{}},s,{best:s.best||{},wsBest:s.wsBest||{}});}catch(e){}return {best:{},dailyTs:null,dailyScore:0,wsBest:{}}}
@@ -499,8 +511,28 @@ const RANKS=[ [0,'🌱 Beginner'],[3,'📗 Learner'],[5,'📘 Scholar'],[7,'📙
 
 /* ---------- screen routing ---------- */
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$('#'+id).classList.add('on');window.scrollTo(0,0);}
-function goMenu(){renderMenu();show('menu');}
+function goMenu(){renderMenu();show('menu');if(!save.tutSeen) setTimeout(showTutorial,400);}
 $('#splash').addEventListener('click',goMenu);
+
+/* 🎓 first-visit tutorial — shown once, then dismissed forever (save.tutSeen) */
+function showTutorial(){
+  const ov=document.createElement('div');ov.id='tut';ov.innerHTML=`
+    <div class="tut-card">
+      <div class="tut-ic">📖</div>
+      <h2>Welcome to Word Up!</h2>
+      <p>Three ways to sharpen your brain (and your Bible smarts) — pick any mode and roll:</p>
+      <ul>
+        <li><b>✝️ Bible · 🌍 World · 🎲 Mixed</b> — 10-question trivia rounds. Tap the right answer, build a 🔥 streak. Bible questions show the scripture ref so you learn while you play.</li>
+        <li><b>📅 Daily 10</b> — a fresh 10 every day, the SAME 10 for everyone (your timezone). Come back tomorrow for new ones.</li>
+        <li><b>🔤 Word Search</b> — tap &amp; drag to find hidden words. Horizontal, vertical, diagonal, forward or backward — like a real one. 🎯</li>
+      </ul>
+      <p style="color:var(--muted);font-style:italic;font-size:11px">"Study to shew thyself approved unto God." — 2 Timothy 2:15 🙏</p>
+      <button class="btn" onclick="closeTutorial()">Let's go ▸</button>
+    </div>`;
+  document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('on'));
+}
+function closeTutorial(){const ov=document.getElementById('tut');if(ov){ov.classList.remove('on');setTimeout(()=>ov.remove(),250);} save.tutSeen=true;persist();}
+window.closeTutorial=closeTutorial;
 
 /* ---------- menu render ---------- */
 function todayStr(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
@@ -633,13 +665,17 @@ function startWS(){
 }
 function generateGrid(words,W,H){
   const g=[];for(let r=0;r<H;r++){const row=[];for(let c=0;c<W;c++)row.push('');g.push(row);}
-  // place each word horizontally or vertically
+  // 🆕 8 directions like a REAL word search: →←↓↑ + all 4 diagonals (so forwards/backwards/diagonal find too)
+  const DIRS=[[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]];
   words.forEach(w=>{
-    let placed=false;for(let tries=0;tries<60&&!placed;tries++){
-      const horiz=Math.random()<0.5; const len=w.length;
-      const r=Math.floor(Math.random()*(horiz?H:(H-len+1))); const c=Math.floor(Math.random()*(horiz?(W-len+1):W));
-      let ok=true;for(let k=0;k<len;k++){const rr=horiz?r:r+k,cc=horiz?c+k:c;const cur=g[rr][cc];if(cur!==''&&cur!==w[k]){ok=false;break;}}
-      if(ok){for(let k=0;k<len;k++){const rr=horiz?r:r+k,cc=horiz?c+k:c;g[rr][cc]=w[k];}placed=true;}
+    let placed=false;for(let tries=0;tries<120&&!placed;tries++){
+      const d=DIRS[Math.floor(Math.random()*DIRS.length)], len=w.length;
+      // pick a starting cell that lets the whole word fit in this direction
+      const rMin = d[0]>0?0:(d[0]<0?len-1:0), rMax = d[0]>0?H-len:(d[0]<0?H-1:H-1);
+      const cMin = d[1]>0?0:(d[1]<0?len-1:0), cMax = d[1]>0?W-len:(d[1]<0?W-1:W-1);
+      const r=rMin+Math.floor(Math.random()*(rMax-rMin+1)), c=cMin+Math.floor(Math.random()*(cMax-cMin+1));
+      let ok=true;for(let k=0;k<len;k++){const rr=r+k*d[0], cc=c+k*d[1]; if(rr<0||rr>=H||cc<0||cc>=W){ok=false;break;} const cur=g[rr][cc]; if(cur!==''&&cur!==w[k]){ok=false;break;}}
+      if(ok){for(let k=0;k<len;k++){g[r+k*d[0]][c+k*d[1]]=w[k];}placed=true;}
     }
   });
   // fill empties with random letters
@@ -665,11 +701,14 @@ function cellEl(r,c){return document.querySelector(`.ws-cell[data-r="${r}"][data
 function cellFromTouch(x,y){const el=document.elementFromPoint(x,y);if(el&&el.classList.contains('ws-cell'))return [+el.dataset.r,+el.dataset.c];return null;}
 function onPD(e){const t=cellFromTouch(e.clientX,e.clientY);if(!t)return;e.preventDefault();WS.start=t;WS.sel=[t];repaintSel();}
 function onPM(e){if(!WS.start)return;const t=cellFromTouch(e.clientX,e.clientY);if(!t)return;
-  // axis-aligned line from start
-  const [r0,c0]=WS.start;const [r,c]=t;const sel=[];
-  if(r===r0){const s=Math.min(c0,c),e2=Math.max(c0,c);for(let cc=s;cc<=e2;cc++) sel.push([r0,cc]);}
-  else if(c===c0){const s=Math.min(r0,r),e2=Math.max(r0,r);for(let rr=s;rr<=e2;rr++) sel.push([rr,c0]);}
-  else{ WS.sel=[WS.start];repaintSel();return;}
+  // 🆕 8-direction selection: horizontal, vertical, OR diagonal (any straight line from start)
+  const [r0,c0]=WS.start, [r,c]=t, dr=r-r0, dc=c-c0;
+  const sel=[];
+  if(dr===0 && dc===0){ sel.push([r0,c0]); }
+  else if(dr===0){ const s=Math.min(c0,c),e2=Math.max(c0,c);for(let cc=s;cc<=e2;cc++) sel.push([r0,cc]); }
+  else if(dc===0){ const s=Math.min(r0,r),e2=Math.max(r0,r);for(let rr=s;rr<=e2;rr++) sel.push([rr,c0]); }
+  else if(Math.abs(dr)===Math.abs(dc)){ const sr=Math.sign(dr),sc=Math.sign(dc),n=Math.abs(dr);for(let k=0;k<=n;k++) sel.push([r0+k*sr,c0+k*sc]); }
+  else { WS.sel=[WS.start]; repaintSel(); return; }   // not a straight line — snap back to start
   WS.sel=sel;repaintSel();
 }
 function onPU(e){if(!WS.start)return;
