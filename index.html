@@ -37,7 +37,11 @@
 
   /* topbar */
   .topbar{display:flex;align-items:center;gap:10px;padding:14px 16px;padding-top:max(14px,env(safe-area-inset-top));flex:0 0 auto}
-  .tb-back{width:42px;height:42px;flex:0 0 auto;border-radius:12px;border:1px solid var(--bg-3);background:var(--bg-2);color:var(--purple);font-size:20px;cursor:pointer}
+  .tb-back{width:48px;height:48px;flex:0 0 auto;border-radius:14px;border:1.5px solid var(--purple);
+    background:linear-gradient(180deg,var(--purple),#6d4bd1);color:#fff;font-size:27px;font-weight:900;line-height:1;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+    box-shadow:0 6px 18px -6px var(--purple),inset 0 1px 0 rgba(255,255,255,.25);transition:transform .12s,filter .15s}
+  .tb-back:hover{filter:brightness(1.13)}
   .tb-back:active{transform:scale(.92)}
   .tb-title{flex:1;font-family:var(--arcade);font-size:18px;letter-spacing:.5px}
   .tb-score{background:linear-gradient(180deg,#2a2410,#1a1608);border:1px solid #6b551c;border-radius:999px;padding:7px 14px;font-weight:800;color:var(--gold-2);font-size:14px;white-space:nowrap}
@@ -168,7 +172,7 @@ if('serviceWorker' in navigator){const had=!!navigator.serviceWorker.controller;
 
   <section class="screen" id="quiz">
     <div class="topbar">
-      <div class="tb-back" onclick="quitQuiz()">‹</div>
+      <div class="tb-back" onclick="quitQuiz()" aria-label="Back to menu">←</div>
       <div class="tb-title" id="qTitle">Quiz</div>
       <div class="tb-score" id="qScore">0</div>
     </div>
@@ -185,7 +189,7 @@ if('serviceWorker' in navigator){const had=!!navigator.serviceWorker.controller;
 
   <section class="screen" id="ws">
     <div class="topbar">
-      <div class="tb-back" onclick="quitWS()">‹</div>
+      <div class="tb-back" onclick="quitWS()" aria-label="Back to menu">←</div>
       <div class="tb-title">🔤 Word Search</div>
       <div class="tb-score" id="wsScore">0/0</div>
     </div>
@@ -227,7 +231,7 @@ if('serviceWorker' in navigator){const had=!!navigator.serviceWorker.controller;
 
 <script>
 "use strict";
-const VERSION='2.2';
+const VERSION='2.3';
 const $=s=>document.querySelector(s);
 const SAVE_KEY='wordup:save:v1';
 let save=load(); function load(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s)return Object.assign({best:{},dailyTs:null,dailyScore:0,wsBest:{}},s,{best:s.best||{},wsBest:s.wsBest||{}});}catch(e){}return {best:{},dailyTs:null,dailyScore:0,wsBest:{}}}
@@ -2184,8 +2188,19 @@ function pickQuestions(mode,count){
   if(mode==='bible') pool=BANK.bible.slice();
   else if(mode==='world') pool=BANK.world.slice();
   else pool=BANK.bible.concat(BANK.world);
-  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
-  return pool.slice(0,count||10);
+  count=count||10;
+  // 🚫 ANTI-REPEAT: don't re-serve a question until ~70% of this mode's bank has cycled.
+  // Tracks recently-served question text per mode in localStorage; resets when exhausted.
+  save.recentQ=save.recentQ||{};
+  const seen=new Set(save.recentQ[mode]||[]);
+  let fresh=pool.filter(q=>!seen.has(q.q));
+  if(fresh.length<count){ fresh=pool.slice(); save.recentQ[mode]=[]; }   // window exhausted → fresh start
+  for(let i=fresh.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[fresh[i],fresh[j]]=[fresh[j],fresh[i]];}
+  const picked=fresh.slice(0,count);
+  const cap=Math.max(count*3, Math.floor(pool.length*0.7));            // remember most of the bank
+  save.recentQ[mode]=(save.recentQ[mode]||[]).concat(picked.map(q=>q.q)).slice(-cap);
+  persist();
+  return picked;
 }
 function startQuiz(mode){
   const list=pickQuestions(mode,10);
@@ -2286,7 +2301,13 @@ function quitQuiz(){goMenu();}
    ========================================================================== */
 let WS=null;
 function startWS(){
-  const idx=Math.floor(Math.random()*WS_PUZZLES.length);
+  // 🚫 ANTI-REPEAT: avoid recent word searches (window = ~60% of the puzzle set)
+  save.recentWS=save.recentWS||[];
+  let bag=WS_PUZZLES.map((_,i)=>i).filter(i=>!save.recentWS.includes(i));
+  if(!bag.length){ bag=WS_PUZZLES.map((_,i)=>i); save.recentWS=[]; }
+  const idx=bag[Math.floor(Math.random()*bag.length)];
+  save.recentWS=save.recentWS.concat(idx).slice(-Math.max(1,Math.floor(WS_PUZZLES.length*0.6)));
+  persist();
   const puz=WS_PUZZLES[idx];
   WS={puz,grid:null,gridW:10,gridH:10,found:{},sel:[],start:null,startedAt:Date.now(),tEl:null};
   WS.grid=generateGrid(puz.words,WS.gridW,WS.gridH);
