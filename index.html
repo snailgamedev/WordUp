@@ -139,6 +139,35 @@
   #pa-links a{display:flex;align-items:center;gap:6px;padding:9px 15px;border-radius:999px;text-decoration:none;font-size:12px;font-weight:800;border:1px solid var(--bg-3);background:var(--bg-2);color:var(--soft)}
   #pa-links a.word{border-color:#6b551c;color:var(--gold-2)}
   #pa-links a:active{transform:scale(.96)}
+  /* ---------- 🧩 CROSSWORD ---------- */
+  .cx-gridwrap{display:flex;justify-content:center;margin:6px 0 4px}
+  .cx-grid{display:grid;gap:3px;touch-action:manipulation}
+  .cx-cell{position:relative;background:var(--bg-2);border-radius:5px;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center}
+  .cx-cell.block{background:transparent}
+  .cx-cell input{width:100%;height:100%;border:none;background:transparent;text-align:center;font-family:var(--arcade);font-size:clamp(13px,4.2vw,20px);color:var(--ink);text-transform:uppercase;caret-color:transparent;border-radius:5px;padding:0}
+  .cx-cell input:focus{outline:none}
+  .cx-cell.hl{background:#2a2546}
+  .cx-cell.cur{background:var(--gold);box-shadow:0 0 0 2px var(--gold-2)}
+  .cx-cell.cur input{color:#1a1405}
+  .cx-cell.ok input{color:var(--green)}
+  .cx-cell.no input{color:var(--red)}
+  .cx-num{position:absolute;top:1px;left:3px;font-size:9px;line-height:1;color:var(--muted);font-weight:800;pointer-events:none}
+  .cx-cell.cur .cx-num{color:#1a1405}
+  .cx-active{text-align:center;font-size:13px;color:var(--soft);min-height:34px;margin:8px auto 2px;max-width:340px;line-height:1.4;font-weight:700}
+  .cx-active b{color:var(--gold)}
+  .cx-cta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:6px 0 16px}
+  .cx-btn{font-family:var(--arcade);font-size:13px;padding:11px 18px;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--gold),#ffb43d);color:#0a0810;box-shadow:0 6px 16px -6px var(--gold)}
+  .cx-btn.ghost{background:var(--bg-2);color:var(--soft);box-shadow:none;border:1px solid var(--bg-3)}
+  .cx-btn:active{transform:scale(.95)}
+  .cx-clues{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
+  @media(max-width:460px){.cx-clues{grid-template-columns:1fr}}
+  .cx-col h4{font-family:var(--arcade);font-size:13px;color:var(--gold);margin:0 0 8px;letter-spacing:.5px}
+  .cx-col ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+  .cx-col li{font-size:12.5px;color:var(--soft);line-height:1.4;cursor:pointer;padding:4px 7px;border-radius:8px;border:1px solid transparent}
+  .cx-col li:hover{background:var(--bg-2)}
+  .cx-col li.on{background:#2a2546;border-color:var(--gold)}
+  .cx-col li.done{color:var(--muted)}.cx-col li.done b{color:var(--green)}
+  .cx-col li b{color:var(--ink);font-weight:800;margin-right:3px}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#a78bff">
@@ -204,6 +233,28 @@ if('serviceWorker' in navigator){const had=!!navigator.serviceWorker.controller;
     </div>
   </section>
 
+  <section class="screen" id="cross">
+    <div class="topbar">
+      <div class="tb-back" onclick="quitCross()" aria-label="Back to menu">←</div>
+      <div class="tb-title">🧩 Crossword</div>
+      <div class="tb-score" id="cxScore">0/0</div>
+    </div>
+    <div class="wrap">
+      <div class="ws-info"><div class="ws-cat" id="cxTitle"></div><div class="ws-count" id="cxProg">—</div></div>
+      <div class="cx-gridwrap"><div class="cx-grid" id="cxGrid"></div></div>
+      <div class="cx-active" id="cxActive">Tap a square to start ✏️</div>
+      <div class="cx-cta">
+        <button class="cx-btn" id="cxCheck">✓ Check</button>
+        <button class="cx-btn ghost" id="cxReveal">💡 Reveal</button>
+        <button class="cx-btn ghost" id="cxNew">🔀 New</button>
+      </div>
+      <div class="cx-clues">
+        <div class="cx-col"><h4>▸ Across</h4><ul id="cxAcross"></ul></div>
+        <div class="cx-col"><h4>▾ Down</h4><ul id="cxDown"></ul></div>
+      </div>
+    </div>
+  </section>
+
   <section class="screen" id="result">
     <div class="wrap" style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;min-height:70vh">
       <div class="r-ic" id="rIc">🏆</div>
@@ -231,7 +282,7 @@ if('serviceWorker' in navigator){const had=!!navigator.serviceWorker.controller;
 
 <script>
 "use strict";
-const VERSION='2.3';
+const VERSION='2.4';
 const $=s=>document.querySelector(s);
 const SAVE_KEY='wordup:save:v1';
 let save=load(); function load(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s)return Object.assign({best:{},dailyTs:null,dailyScore:0,wsBest:{}},s,{best:s.best||{},wsBest:s.wsBest||{}});}catch(e){}return {best:{},dailyTs:null,dailyScore:0,wsBest:{}}}
@@ -2119,6 +2170,7 @@ const MODES=[
   {id:'daily',  name:'Daily 10',      ic:'📅',  mc:'var(--gold-2)',desc:'A FRESH 10 every day · same for everyone today.',         soon:false},
   {id:'ws',     name:'Word Search',   ic:'🔤',  mc:'var(--green)', desc:'Find hidden Bible-themed words on a grid.',              soon:false},
   {id:'fill',   name:'Verse Fill',    ic:'✏️',  mc:'var(--pink)',  desc:'Bible verses with blanks · pick the missing words to complete.', soon:false},
+  {id:'cross',  name:'Crossword',     ic:'🧩',  mc:'var(--cyan)',  desc:'Bible mini crosswords · fill the interlocking grid from the clues.', soon:false},
 ];
 
 const RANKS=[ [0,'🌱 Beginner'],[3,'📗 Learner'],[5,'📘 Scholar'],[7,'📙 Sharp'],[9,'🧠 Genius'],[10,'👑 WORD UP MASTER'] ];
@@ -2134,12 +2186,13 @@ function showTutorial(){
     <div class="tut-card">
       <div class="tut-ic">📖</div>
       <h2>Welcome to Word Up!</h2>
-      <p>Three ways to sharpen your brain (and your Bible smarts) — pick any mode and roll:</p>
+      <p>Several ways to sharpen your brain (and your Bible smarts) — pick any mode and roll:</p>
       <ul>
         <li><b>✝️ Bible · 🌍 World · 🎲 Mixed</b> — 10-question trivia rounds. Tap the right answer, build a 🔥 streak. Bible questions show the scripture ref so you learn while you play.</li>
         <li><b>📅 Daily 10</b> — a fresh 10 every day, the SAME 10 for everyone (your timezone). Come back tomorrow for new ones.</li>
         <li><b>🔤 Word Search</b> — tap &amp; drag to find hidden words. Horizontal, vertical, diagonal, forward or backward — like a real one. 🎯</li>
         <li><b>✏️ Verse Fill</b> — Bible verses with blanks · tap the missing words to complete · 5 verses per round.</li>
+        <li><b>🧩 Crossword</b> — real interlocking Bible mini crosswords · fill the grid from the clues, hit Check.</li>
         <li><b>🎯 50/50 hint</b> — stuck on a trivia Q? Tap the hint once per round to remove 2 wrong answers.</li>
       </ul>
       <p style="color:var(--muted);font-style:italic;font-size:11px">"Study to shew thyself approved unto God." — 2 Timothy 2:15 🙏</p>
@@ -2170,12 +2223,13 @@ function renderMenu(){
   const bests=Object.values(save.best);const top=bests.length?Math.max(...bests):null;
   $('#menuBest').textContent=top!=null?('best '+top+'/10'):'best —';
   const totalQs=BANK.bible.length+BANK.world.length;
-  $('#menuFoot').innerHTML='✝️ Bible knowledge + brain workout · 🙏<br>'+totalQs+' questions · '+WS_PUZZLES.length+' word searches · '+VERSE_FILLS.length+' verse-fills · daily fresh 10 · 50/50 hints · v'+VERSION;
+  $('#menuFoot').innerHTML='✝️ Bible knowledge + brain workout · 🙏<br>'+totalQs+' questions · '+WS_PUZZLES.length+' word searches · '+VERSE_FILLS.length+' verse-fills · 6 crosswords · daily fresh 10 · 50/50 hints · v'+VERSION;
 }
 function route(id){
   if(id==='ws') startWS();
   else if(id==='daily') startDaily();
   else if(id==='fill') startFill();
+  else if(id==='cross') startCross();
   else startQuiz(id);
 }
 
@@ -2537,8 +2591,129 @@ window.quitQuiz=quitQuiz;window.goMenu=goMenu;window.replay=replay;window.quitWS
 const _origReplay = replay;
 window.replay = function(){
   if (VF){ VF=null; startFill(); return; }
+  if (CX){ const wasCross=true; CX=null; if(wasCross){ startCross(); return; } }
   _origReplay();
 };
+
+/* ==========================================================================
+   🧩 CROSSWORD ENGINE — real interlocking Bible mini crosswords (validated grids)
+   ========================================================================== */
+const CX_FALLBACK=[{title:'Foundations',w:5,h:5,sol:['GRACE','I....','V....','E....','SEEK.'],
+  entries:[{dir:'A',r:0,c:0,len:5,clue:'Unearned favor from God',a:'GRACE'},{dir:'D',r:0,c:0,len:4,clue:"'Freely ___'",a:'GIVE'},{dir:'A',r:4,c:0,len:4,clue:"'___ ye first the kingdom'",a:'SEEK'}]}];
+let CXP=null, CX=null;
+function loadCrossPuzzles(cb){
+  if(CXP){cb();return;}
+  fetch('crossword.json',{cache:'force-cache'}).then(r=>r.ok?r.json():null)
+    .then(o=>{CXP=(Array.isArray(o)&&o.length)?o:CX_FALLBACK;cb();})
+    .catch(()=>{CXP=CX_FALLBACK;cb();});
+}
+function startCross(){
+  loadCrossPuzzles(()=>{
+    const last=save.lastCross; let idx;
+    do{ idx=Math.floor(Math.random()*CXP.length); }while(CXP.length>1 && idx===last);
+    save.lastCross=idx; persist();
+    buildCross(CXP[idx]); show('cross');
+  });
+}
+function buildCross(pz){
+  const W=pz.w,H=pz.h, cells=[];
+  for(let r=0;r<H;r++){cells.push([]);for(let c=0;c<W;c++){const ch=pz.sol[r][c];cells[r].push(ch==='.'?null:{ch,val:''});}}
+  let num=0; const numAt={};
+  for(let r=0;r<H;r++)for(let c=0;c<W;c++){const cell=cells[r][c];if(!cell)continue;
+    const sA=(c===0||!cells[r][c-1])&&(c+1<W&&cells[r][c+1]);
+    const sD=(r===0||!cells[r-1][c])&&(r+1<H&&cells[r+1][c]);
+    if(sA||sD){num++;cell.num=num;numAt[r+','+c]=num;}}
+  const entries=pz.entries.map(e=>{const coords=[];for(let i=0;i<e.len;i++){coords.push(e.dir==='A'?[e.r,e.c+i]:[e.r+i,e.c]);}return {...e,num:numAt[e.r+','+e.c],coords};});
+  CX={pz,W,H,cells,entries,dir:'A',cur:null};
+  $('#cxTitle').textContent='🧩 '+(pz.title||'Crossword');
+  renderCross();
+}
+function cellEl(r,c){return $('#cxGrid').querySelector('.cx-cell[data-r="'+r+'"][data-c="'+c+'"]');}
+function activeEntry(){ if(!CX.cur)return null; const [r,c]=CX.cur;
+  return CX.entries.find(e=>e.dir===CX.dir && e.coords.some(([y,x])=>y===r&&x===c)) ||
+         CX.entries.find(e=>e.coords.some(([y,x])=>y===r&&x===c)); }
+function highlight(){
+  $('#cxGrid').querySelectorAll('.cx-cell').forEach(d=>d.classList.remove('hl','cur'));
+  const e=activeEntry(); if(e){CX.dir=e.dir; e.coords.forEach(([y,x])=>{const d=cellEl(y,x);if(d)d.classList.add('hl');});}
+  if(CX.cur){const d=cellEl(CX.cur[0],CX.cur[1]); if(d)d.classList.add('cur');}
+  // clue panel highlight + active label
+  $('#cxAcross').querySelectorAll('li').forEach(li=>li.classList.remove('on'));
+  $('#cxDown').querySelectorAll('li').forEach(li=>li.classList.remove('on'));
+  if(e){const li=document.getElementById('cxclue-'+e.dir+e.num);if(li)li.classList.add('on');
+    $('#cxActive').innerHTML='<b>'+e.num+' '+(e.dir==='A'?'Across':'Down')+'</b> · '+e.clue;}
+}
+function setCur(r,c,focus){ CX.cur=[r,c]; highlight(); if(focus){const d=cellEl(r,c);const inp=d&&d.querySelector('input');if(inp)inp.focus();} }
+function toggleDir(){ if(!CX.cur)return; const [r,c]=CX.cur;
+  const hasA=CX.entries.some(e=>e.dir==='A'&&e.coords.some(([y,x])=>y===r&&x===c));
+  const hasD=CX.entries.some(e=>e.dir==='D'&&e.coords.some(([y,x])=>y===r&&x===c));
+  if(hasA&&hasD) CX.dir=(CX.dir==='A'?'D':'A'); }
+function advance(){ const e=activeEntry(); if(!e||!CX.cur)return; const i=e.coords.findIndex(([y,x])=>y===CX.cur[0]&&x===CX.cur[1]);
+  if(i>=0&&i<e.coords.length-1){const [ny,nx]=e.coords[i+1];setCur(ny,nx,true);} }
+function retreat(){ const e=activeEntry(); if(!e||!CX.cur)return; const i=e.coords.findIndex(([y,x])=>y===CX.cur[0]&&x===CX.cur[1]);
+  if(i>0){const [py,px]=e.coords[i-1];setCur(py,px,true);} }
+function move(dr,dc){ if(!CX.cur)return; let [r,c]=CX.cur;
+  for(let k=0;k<Math.max(CX.W,CX.H);k++){ r+=dr;c+=dc; if(r<0||c<0||r>=CX.H||c>=CX.W)return; if(CX.cells[r][c]){setCur(r,c,true);return;} } }
+function clearMarks(){ $('#cxGrid').querySelectorAll('.cx-cell').forEach(d=>d.classList.remove('ok','no')); }
+function renderCross(){
+  const g=$('#cxGrid'); g.style.gridTemplateColumns='repeat('+CX.W+',minmax(0,1fr))';
+  g.style.width=Math.min(CX.W*42,360)+'px'; g.innerHTML='';
+  for(let r=0;r<CX.H;r++)for(let c=0;c<CX.W;c++){
+    const cell=CX.cells[r][c]; const d=document.createElement('div');
+    if(!cell){d.className='cx-cell block';g.appendChild(d);continue;}
+    d.className='cx-cell'; d.dataset.r=r; d.dataset.c=c;
+    if(cell.num){const n=document.createElement('span');n.className='cx-num';n.textContent=cell.num;d.appendChild(n);}
+    const inp=document.createElement('input'); inp.maxLength=1; inp.setAttribute('inputmode','text'); inp.autocapitalize='characters'; inp.spellcheck=false; inp.value=cell.val||'';
+    inp.addEventListener('focus',()=>{ if(!CX.cur||CX.cur[0]!==r||CX.cur[1]!==c) setCur(r,c,false); });
+    inp.addEventListener('input',()=>{ const v=(inp.value||'').toUpperCase().replace(/[^A-Z]/g,'').slice(-1); inp.value=v; cell.val=v; clearMarks(); updateProgress(); if(v) advance(); });
+    inp.addEventListener('keydown',e=>{
+      if(e.key==='Backspace'){ if(!cell.val){e.preventDefault();retreat();} else {cell.val='';clearMarks();updateProgress();} }
+      else if(e.key==='ArrowRight'){e.preventDefault();move(0,1);} else if(e.key==='ArrowLeft'){e.preventDefault();move(0,-1);}
+      else if(e.key==='ArrowDown'){e.preventDefault();move(1,0);} else if(e.key==='ArrowUp'){e.preventDefault();move(-1,0);}
+    });
+    d.appendChild(inp);
+    d.addEventListener('click',()=>{ if(CX.cur&&CX.cur[0]===r&&CX.cur[1]===c) toggleDir(); setCur(r,c,true); });
+    g.appendChild(d);
+  }
+  const mk=(e)=>{const li=document.createElement('li');li.id='cxclue-'+e.dir+e.num;li.innerHTML='<b>'+e.num+'.</b> '+e.clue;li.onclick=()=>{CX.dir=e.dir;setCur(e.coords[0][0],e.coords[0][1],true);};return li;};
+  const aUL=$('#cxAcross'),dUL=$('#cxDown'); aUL.innerHTML='';dUL.innerHTML='';
+  CX.entries.filter(e=>e.dir==='A').sort((a,b)=>a.num-b.num).forEach(e=>aUL.appendChild(mk(e)));
+  CX.entries.filter(e=>e.dir==='D').sort((a,b)=>a.num-b.num).forEach(e=>dUL.appendChild(mk(e)));
+  updateProgress();
+  const first=CX.entries.slice().sort((a,b)=>a.num-b.num)[0];
+  if(first) setCur(first.coords[0][0],first.coords[0][1],false);
+}
+function updateProgress(){
+  let filled=0,total=0;
+  for(let r=0;r<CX.H;r++)for(let c=0;c<CX.W;c++){const cell=CX.cells[r][c];if(cell){total++;if(cell.val)filled++;}}
+  $('#cxProg').textContent=filled+'/'+total+' filled';
+  // mark solved clues green in the panel
+  CX.entries.forEach(e=>{const solved=e.coords.every(([y,x])=>CX.cells[y][x].val===CX.cells[y][x].ch);
+    const li=document.getElementById('cxclue-'+e.dir+e.num); if(li)li.classList.toggle('done',solved);});
+}
+function revealCur(){ if(!CX.cur)return; const [r,c]=CX.cur; const cell=CX.cells[r][c]; if(!cell)return;
+  cell.val=cell.ch; const inp=cellEl(r,c).querySelector('input'); inp.value=cell.ch; clearMarks(); updateProgress(); advance(); }
+function checkCross(){
+  let total=0,correct=0,blank=0;
+  for(let r=0;r<CX.H;r++)for(let c=0;c<CX.W;c++){const cell=CX.cells[r][c];if(!cell)continue;total++;
+    const d=cellEl(r,c);d.classList.remove('ok','no');
+    if(!cell.val){blank++;continue;}
+    if(cell.val===cell.ch){correct++;d.classList.add('ok');}else{d.classList.add('no');}}
+  $('#cxScore').textContent=correct+'/'+total;
+  if(correct===total){ winCross(); }
+  else if(blank>0){ showToast('✏️ '+blank+' square'+(blank>1?'s':'')+' left — keep goin\' 🙌'); }
+  else { showToast('👀 Some letters are off — check the red ones'); }
+}
+function winCross(){
+  try{FX.burst(120);}catch(e){}
+  const best=save.best||(save.best={}); const prev=best.cross||0; best.cross=(prev+1); persist();
+  showToast('🧩 SOLVED! "'+(CX.pz.title||'Crossword')+'" — nice work 👑',2600);
+  $('#cxActive').innerHTML='<b>🎉 Solved!</b> · tap 🔀 New for another';
+}
+function quitCross(){ CX=null; goMenu(); }
+(function(){
+  const ck=$('#cxCheck'),rv=$('#cxReveal'),nw=$('#cxNew');
+  if(ck)ck.onclick=checkCross; if(rv)rv.onclick=revealCur; if(nw)nw.onclick=()=>{CX=null;startCross();};
+})();
 </script>
 <script>
 /* 🔥 LAG-KILL (2026-05-28): pause all CSS anims when tab hidden · offscreen-skip on heavy lists */

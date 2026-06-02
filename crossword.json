@@ -1,0 +1,491 @@
+[
+ {
+  "w": 11,
+  "h": 8,
+  "sol": [
+   "......ANGEL",
+   "....H.R.L..",
+   "...ROCK.O..",
+   "..V.P...R..",
+   "ABIDE...Y..",
+   "M.N........",
+   "E.E........",
+   "N.........."
+  ],
+  "entries": [
+   {
+    "dir": "A",
+    "r": 2,
+    "c": 3,
+    "len": 4,
+    "clue": "The wise built on this",
+    "a": "ROCK"
+   },
+   {
+    "dir": "D",
+    "r": 1,
+    "c": 4,
+    "len": 4,
+    "clue": "An anchor for the soul",
+    "a": "HOPE"
+   },
+   {
+    "dir": "A",
+    "r": 4,
+    "c": 0,
+    "len": 5,
+    "clue": "'___ in Me, and I in you'",
+    "a": "ABIDE"
+   },
+   {
+    "dir": "D",
+    "r": 4,
+    "c": 0,
+    "len": 4,
+    "clue": "'So be it' — prayer's close",
+    "a": "AMEN"
+   },
+   {
+    "dir": "D",
+    "r": 3,
+    "c": 2,
+    "len": 4,
+    "clue": "'I am the ___, ye are the branches'",
+    "a": "VINE"
+   },
+   {
+    "dir": "D",
+    "r": 0,
+    "c": 6,
+    "len": 3,
+    "clue": "Noah's floating rescue",
+    "a": "ARK"
+   },
+   {
+    "dir": "A",
+    "r": 0,
+    "c": 6,
+    "len": 5,
+    "clue": "Heavenly messenger",
+    "a": "ANGEL"
+   },
+   {
+    "dir": "D",
+    "r": 0,
+    "c": 8,
+    "len": 5,
+    "clue": "What the heavens declare",
+    "a": "GLORY"
+   }
+  ],
+  "title": "Foundations"
+ },
+ {
+  "w": 9,
+  "h": 8,
+  "sol": [
+   "....C....",
+   "....ALTAR",
+   "....N...I",
+   "..PSALM.S",
+   "..E...E.E",
+   "..A...R.N",
+   "..C.ROCK.",
+   "AMEN..Y.."
+  ],
+  "entries": [
+   {
+    "dir": "A",
+    "r": 6,
+    "c": 4,
+    "len": 4,
+    "clue": "The wise built on this",
+    "a": "ROCK"
+   },
+   {
+    "dir": "D",
+    "r": 3,
+    "c": 6,
+    "len": 5,
+    "clue": "New every morning",
+    "a": "MERCY"
+   },
+   {
+    "dir": "A",
+    "r": 3,
+    "c": 2,
+    "len": 5,
+    "clue": "A song of David",
+    "a": "PSALM"
+   },
+   {
+    "dir": "D",
+    "r": 3,
+    "c": 2,
+    "len": 5,
+    "clue": "'My ___ I give unto you'",
+    "a": "PEACE"
+   },
+   {
+    "dir": "D",
+    "r": 0,
+    "c": 4,
+    "len": 4,
+    "clue": "Where water became wine",
+    "a": "CANA"
+   },
+   {
+    "dir": "A",
+    "r": 1,
+    "c": 4,
+    "len": 5,
+    "clue": "Where sacrifices were offered",
+    "a": "ALTAR"
+   },
+   {
+    "dir": "A",
+    "r": 7,
+    "c": 0,
+    "len": 4,
+    "clue": "'So be it' — prayer's close",
+    "a": "AMEN"
+   },
+   {
+    "dir": "D",
+    "r": 1,
+    "c": 8,
+    "len": 5,
+    "clue": "'He is not here, He is ___'",
+    "a": "RISEN"
+   }
+  ],
+  "title": "The Saviour"
+ },
+ {
+  "w": 10,
+  "h": 10,
+  "sol": [
+   ".M........",
+   "SAVED.....",
+   ".N...P....",
+   ".GRACE....",
+   ".E...ABIDE",
+   ".R...C....",
+   "..DOVE....",
+   "....I.....",
+   "..CANA....",
+   "....E....."
+  ],
+  "entries": [
+   {
+    "dir": "A",
+    "r": 6,
+    "c": 2,
+    "len": 4,
+    "clue": "Sign the flood had ended",
+    "a": "DOVE"
+   },
+   {
+    "dir": "D",
+    "r": 6,
+    "c": 4,
+    "len": 4,
+    "clue": "'I am the ___, ye are the branches'",
+    "a": "VINE"
+   },
+   {
+    "dir": "A",
+    "r": 8,
+    "c": 2,
+    "len": 4,
+    "clue": "Where water became wine",
+    "a": "CANA"
+   },
+   {
+    "dir": "D",
+    "r": 2,
+    "c": 5,
+    "len": 5,
+    "clue": "'My ___ I give unto you'",
+    "a": "PEACE"
+   },
+   {
+    "dir": "A",
+    "r": 3,
+    "c": 1,
+    "len": 5,
+    "clue": "Unearned favor from God",
+    "a": "GRACE"
+   },
+   {
+    "dir": "D",
+    "r": 0,
+    "c": 1,
+    "len": 6,
+    "clue": "Jesus' first bed",
+    "a": "MANGER"
+   },
+   {
+    "dir": "A",
+    "r": 1,
+    "c": 0,
+    "len": 5,
+    "clue": "'By grace are ye ___'",
+    "a": "SAVED"
+   },
+   {
+    "dir": "A",
+    "r": 4,
+    "c": 5,
+    "len": 5,
+    "clue": "'___ in Me, and I in you'",
+    "a": "ABIDE"
+   }
+  ],
+  "title": "Living Water"
+ },
+ {
+  "w": 8,
+  "h": 10,
+  "sol": [
+   "..F.....",
+   "..A.....",
+   ".RISEN..",
+   "..T.....",
+   "..HOPE..",
+   ".....V..",
+   "SHEPHERD",
+   "E..R..O.",
+   "E..A..C.",
+   "K..Y..K."
+  ],
+  "entries": [
+   {
+    "dir": "A",
+    "r": 6,
+    "c": 0,
+    "len": 8,
+    "clue": "The Lord is my ___",
+    "a": "SHEPHERD"
+   },
+   {
+    "dir": "D",
+    "r": 4,
+    "c": 5,
+    "len": 3,
+    "clue": "First woman",
+    "a": "EVE"
+   },
+   {
+    "dir": "D",
+    "r": 6,
+    "c": 6,
+    "len": 4,
+    "clue": "The wise built on this",
+    "a": "ROCK"
+   },
+   {
+    "dir": "A",
+    "r": 4,
+    "c": 2,
+    "len": 4,
+    "clue": "An anchor for the soul",
+    "a": "HOPE"
+   },
+   {
+    "dir": "D",
+    "r": 6,
+    "c": 3,
+    "len": 4,
+    "clue": "'___ without ceasing'",
+    "a": "PRAY"
+   },
+   {
+    "dir": "D",
+    "r": 0,
+    "c": 2,
+    "len": 5,
+    "clue": "Sure of what you can't see yet",
+    "a": "FAITH"
+   },
+   {
+    "dir": "A",
+    "r": 2,
+    "c": 1,
+    "len": 5,
+    "clue": "'He is not here, He is ___'",
+    "a": "RISEN"
+   },
+   {
+    "dir": "D",
+    "r": 6,
+    "c": 0,
+    "len": 4,
+    "clue": "'___ ye first the kingdom'",
+    "a": "SEEK"
+   }
+  ],
+  "title": "Cornerstones"
+ },
+ {
+  "w": 9,
+  "h": 9,
+  "sol": [
+   ".A.......",
+   "CROSS..S.",
+   ".K..A..H.",
+   "..R.VINE.",
+   ".DOVE..P.",
+   "..C.D..H.",
+   "..K....E.",
+   "....GLORY",
+   ".......D."
+  ],
+  "entries": [
+   {
+    "dir": "A",
+    "r": 3,
+    "c": 4,
+    "len": 4,
+    "clue": "'I am the ___, ye are the branches'",
+    "a": "VINE"
+   },
+   {
+    "dir": "D",
+    "r": 1,
+    "c": 7,
+    "len": 8,
+    "clue": "The Lord is my ___",
+    "a": "SHEPHERD"
+   },
+   {
+    "dir": "D",
+    "r": 1,
+    "c": 4,
+    "len": 5,
+    "clue": "'By grace are ye ___'",
+    "a": "SAVED"
+   },
+   {
+    "dir": "A",
+    "r": 7,
+    "c": 4,
+    "len": 5,
+    "clue": "What the heavens declare",
+    "a": "GLORY"
+   },
+   {
+    "dir": "A",
+    "r": 1,
+    "c": 0,
+    "len": 5,
+    "clue": "Where the debt got paid",
+    "a": "CROSS"
+   },
+   {
+    "dir": "D",
+    "r": 0,
+    "c": 1,
+    "len": 3,
+    "clue": "Noah's floating rescue",
+    "a": "ARK"
+   },
+   {
+    "dir": "A",
+    "r": 4,
+    "c": 1,
+    "len": 4,
+    "clue": "Sign the flood had ended",
+    "a": "DOVE"
+   },
+   {
+    "dir": "D",
+    "r": 3,
+    "c": 2,
+    "len": 4,
+    "clue": "The wise built on this",
+    "a": "ROCK"
+   }
+  ],
+  "title": "Bread of Heaven"
+ },
+ {
+  "w": 11,
+  "h": 6,
+  "sol": [
+   "ROCK.......",
+   "..A...GLORY",
+   "..N.A.I....",
+   "PSALM.V....",
+   "....EVE....",
+   ".ZION......"
+  ],
+  "entries": [
+   {
+    "dir": "A",
+    "r": 4,
+    "c": 4,
+    "len": 3,
+    "clue": "First woman",
+    "a": "EVE"
+   },
+   {
+    "dir": "D",
+    "r": 2,
+    "c": 4,
+    "len": 4,
+    "clue": "'So be it' — prayer's close",
+    "a": "AMEN"
+   },
+   {
+    "dir": "D",
+    "r": 1,
+    "c": 6,
+    "len": 4,
+    "clue": "'Freely ___'",
+    "a": "GIVE"
+   },
+   {
+    "dir": "A",
+    "r": 5,
+    "c": 1,
+    "len": 4,
+    "clue": "City of God",
+    "a": "ZION"
+   },
+   {
+    "dir": "A",
+    "r": 3,
+    "c": 0,
+    "len": 5,
+    "clue": "A song of David",
+    "a": "PSALM"
+   },
+   {
+    "dir": "D",
+    "r": 0,
+    "c": 2,
+    "len": 4,
+    "clue": "Where water became wine",
+    "a": "CANA"
+   },
+   {
+    "dir": "A",
+    "r": 1,
+    "c": 6,
+    "len": 5,
+    "clue": "What the heavens declare",
+    "a": "GLORY"
+   },
+   {
+    "dir": "A",
+    "r": 0,
+    "c": 0,
+    "len": 4,
+    "clue": "The wise built on this",
+    "a": "ROCK"
+   }
+  ],
+  "title": "The Promise"
+ }
+]
