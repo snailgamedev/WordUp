@@ -1,5 +1,5 @@
 /* Word Up service worker — force auto-update (skipWaiting + claim) so installed PWAs always run the latest. */
-const CACHE='wordup-v4';
+const CACHE='wordup-v5';
 const SHELL=['./','./index.html','./manifest.json','./icon.svg','./crossword.json'];
 self.addEventListener('install', e => { self.skipWaiting(); e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).catch(()=>{})); });
 self.addEventListener('message', e => { if (e.data === 'SKIP_WAITING') self.skipWaiting(); });

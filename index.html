@@ -298,7 +298,9 @@ if(EMBEDDED){const el=$('#pa-links');if(el)el.style.display='none';}
 
 /* ---------- SFX (tiny WebAudio) ---------- */
 const SFX=(()=>{
-  let ctx;function ac(){return ctx||(ctx=new (window.AudioContext||window.webkitAudioContext)());}
+  let ctx;function ac(){if(!ctx){try{ctx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(ctx&&ctx.state==='suspended'){ctx.resume().catch(()=>{});}return ctx;}
+  /* 🔊 keep the Word loud — resume the context on first tap + after refocus so sound never cuts out */
+  (function(){const kick=()=>{try{const c=ac();if(c&&c.state==='suspended')c.resume().catch(()=>{});}catch(e){}};['pointerdown','touchstart','keydown','click'].forEach(ev=>window.addEventListener(ev,kick,{passive:true}));document.addEventListener('visibilitychange',()=>{if(!document.hidden)kick();});})();
   function tone(f,d,t){const a=ac(),o=a.createOscillator(),g=a.createGain();o.type=t||'sine';o.frequency.value=f;o.connect(g);g.connect(a.destination);
     g.gain.setValueAtTime(0,a.currentTime);g.gain.linearRampToValueAtTime(.22,a.currentTime+.01);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+d);
     o.start();o.stop(a.currentTime+d);}
